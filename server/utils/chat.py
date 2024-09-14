@@ -1,4 +1,6 @@
 import os
+import re
+from fastapi import HTTPException , status
 from datetime import datetime
 from constants.prompts import user_message_without_results, user_message_with_results
 from groq import AsyncGroq
@@ -46,38 +48,62 @@ client = AsyncGroq(
 
 
 async def get_descision(query: str):
+    pattern = r'"to_search":\s*(true|false)'
     current_date = datetime.now()
     formatted_date = current_date.strftime("%d %B %Y")
     parser = JsonOutputParser(pydantic_object=descision)
     prompt = PromptTemplate(template=to_search_or_not,input_variables=["Query","Date"],partial_variables={"format_instructions": parser.get_format_instructions()})
-    chain = prompt | chat | parser
+    chain = prompt | chat | StrOutputParser()
     output = chain.invoke({"Query":query,"Date":formatted_date})
+    match = re.search(pattern, output, re.IGNORECASE)
+    if match:
+        value = match.group(1)
+        flag = value.lower() == 'true'
+    
+        if flag:
+            output= flag
+            print(type(flag))
+            print("The value is True.")
+        else:
+            print("The value is False.")
+    else:
+        output = False
+        print("No match found.")
+    print(output)
     return output
 
 
 async def chat_handler(query: str,session_id:str,results: dict) -> dict:
-    if results is None:
-        prompt = system_with_no_results
-        context = "" 
-    else:
-        prompt = system_with_results
-        context = format_search_results(results) 
+    try:
+        if results is None:
+            prompt = system_with_no_results
+            context = "" 
+        else:
+            prompt = system_with_results
+            context = format_search_results(results) 
 
-    rag_chain = prompt | llm | StrOutputParser()
-    with_message_history = RunnableWithMessageHistory(
-            rag_chain,
-            get_message_history,
-            input_messages_key="input",
-            history_messages_key="history",
-        )
-    context = format_search_results(results)
+        rag_chain = prompt | llm | StrOutputParser()
+        with_message_history = RunnableWithMessageHistory(
+                rag_chain,
+                get_message_history,
+                input_messages_key="input",
+                history_messages_key="history",
+            )
+        context = format_search_results(results)
 
-    final_response = await with_message_history.ainvoke(
-            {"context": context, "input": query},
-            config={"configurable": {"session_id": session_id}},
-        )
+        final_response = await with_message_history.ainvoke(
+                {"context": context, "input": query},
+                config={"configurable": {"session_id": session_id}},
+            )
+        response_data = {
+                "refined_results": final_response,
+                "results": results
+        }
+        return response_data
 
-    return {"refined_results": final_response}
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred. Please try again later.")
 
 
 

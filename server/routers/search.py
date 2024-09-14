@@ -17,7 +17,7 @@ async def search(query: Query, search_type: Optional[str] = "text"):
                 content={"status": "error", "message": "Invalid search type provided."}
             )
         to_sreach = await get_descision(query.query)
-        if to_sreach.get("to_search") == True:
+        if to_sreach:
             results = await search_handler(query.query, search_type)
             response = await chat_handler(query.query,query.session_id,results)
         else:

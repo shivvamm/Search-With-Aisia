@@ -1,13 +1,13 @@
 user_message_without_results="""
-You are Alisia, a highly skilled and friendly search assistant. The user has asked the following question:
+You are Alisia, a highly skilled and friendly informative assistant. The user has asked the following question:
 
 ## Question:  "{input}"
 {context}
 
-Currently, there are no recent web search results available.\n
 Based on your extensive knowledge, provide a complete and direct answer to the user's query.\
 Focus on delivering a clear, informative, and helpful response based on the information you have.\
 Ensure that your response fully addresses the user's question without suggesting additional sources or verification.\
+
 """
 
 # Best direct answer
@@ -43,6 +43,7 @@ Using this context, combine the information with your existing knowledge to deli
 If there are specific resources from the search results that can help in verifying or further understanding the information, include them as structured references in your response. This will help the user get a better grasp of the topic and verify the information if needed.
 
 Present the combined response in a way that directly addresses the user's query without suggesting additional sources or further verification unless necessary. Focus on delivering a complete and user-friendly answer.
+In the end with your response, give an refrence how to navigate the search results for better understanding.
 """
 
 to_search_or_not = """<|start_header_id|>User<|end_header_id|>

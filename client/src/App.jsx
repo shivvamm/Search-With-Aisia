@@ -1,30 +1,28 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import Search from "./components/Search";
+import Chats from "./components/Chats";
+import { useState, useEffect } from "react";
 
 function App() {
-  return (
-    <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900">
-      {/* Main content */}
-      <div className="flex flex-col items-center justify-center flex-grow p-4">
-        <div className="flex gap-4 mb-8">
-          <img
-            src={reactLogo}
-            className="w-24 h-24 animate-spin-slow"
-            alt="React logo"
-          />
-          <img src={viteLogo} className="w-24 h-24" alt="Vite logo" />
-        </div>
-        <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-8">
-          Vite + React
-        </h1>
-      </div>
+  const [messages, setMessages] = useState([]);
 
-      {/* Search component */}
-      <div className="p-4">
-        <Search />
+  const [sessionId, setSessionId] = useState(""); // State for session ID
+
+  useEffect(() => {
+    const initialSessionId = Math.random().toString(36).substr(2, 9);
+    setSessionId(initialSessionId);
+    console.log(initialSessionId);
+  }, []);
+
+  const addMessage = (type, content) => {
+    setMessages((prevMessages) => [...prevMessages, { type, content }]);
+  };
+  return (
+    <div className="flex flex-col h-screen items-center bg-gray-100 overflow-y-auto dark:bg-gray-900">
+      {/* Main content */}
+      <Chats messages={messages} />
+      <div className="fixed bottom-0 w-full p-4">
+        <Search addMessage={addMessage} sessionId={sessionId} />
       </div>
     </div>
   );
