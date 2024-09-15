@@ -20,4 +20,8 @@ app.include_router(chat.router)
 app.include_router(search.router)
 
 
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
 
