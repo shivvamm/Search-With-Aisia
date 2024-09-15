@@ -1,4 +1,3 @@
-import httpx
 from duckduckgo_search import AsyncDDGS
 from typing import List, Dict
 
