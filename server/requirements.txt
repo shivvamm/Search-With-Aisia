@@ -6,3 +6,4 @@ python-dotenv==1.0.1
 duckduckgo_search==6.1.5
 pydantic==2.8.2
 langchain-groq
+uvicorn
