@@ -17,11 +17,13 @@ async def search(query: Query, search_type: Optional[str] = "text"):
                 content={"status": "error", "message": "Invalid search type provided."}
             )
         to_sreach = await get_descision(query.query)
+        print("this is the value of to searh",type(to_sreach))
+
         if to_sreach:
             results = await search_handler(query.query, search_type)
             response = await chat_handler(query.query,query.session_id,results)
         else:
-            response = await chat_handler(query.query,query.session_id,results=None)
+            response = await chat_handler(query.query,query.session_id,results="")
         return JSONResponse(
             status_code=200,
             content={

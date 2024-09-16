@@ -2,7 +2,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from routers import chat,search
 from typing import Dict
-from langchain_core.prompts import ChatPromptTemplate
 import os
 from config.llm import llm,client
 from dotenv import load_dotenv

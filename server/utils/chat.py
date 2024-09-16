@@ -61,10 +61,11 @@ async def get_descision(query: str):
         flag = value.lower() == 'true'
     
         if flag:
-            output= flag
+            output= True
             print(type(flag))
             print("The value is True.")
         else:
+            output = False
             print("The value is False.")
     else:
         output = False
@@ -75,8 +76,8 @@ async def get_descision(query: str):
 
 async def chat_handler(query: str,session_id:str,results: dict) -> dict:
     try:
-        if results is None:
-            prompt = system_with_no_results
+        if results is "":
+            prompt = system_without_results
             context = "" 
         else:
             prompt = system_with_results

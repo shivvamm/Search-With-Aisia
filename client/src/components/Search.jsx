@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Generate from "./icons/Generate";
 import Voice from "./icons/Voice";
 import Image from "./icons/Image";
 import Camera from "./icons/Camera";
 export default function Search({ addMessage, session_id }) {
-  // State to manage the content of the prompt
   const [promptText, setPromptText] = useState("");
   const [aiResponse, setAiResponse] = useState("");
   const [userPrompt, setUserPrompt] = useState("");
@@ -18,7 +17,6 @@ export default function Search({ addMessage, session_id }) {
   ];
 
   const handleItemClick = (text) => {
-    // Append the selected text to the existing promptText
     setPromptText((prevPromptText) => `${prevPromptText} ${text}`);
   };
 
@@ -32,16 +30,22 @@ export default function Search({ addMessage, session_id }) {
       return;
     }
     addMessage("user", promptText);
-    const response = await fetch(`${meta.env.BACKEND_URL}search`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: promptText,
-        session_id: toString(session_id),
-      }), // Send the user input to the API
-    });
+    setPromptText("");
+    const backendUrl = import.meta.env.VITE_LOCAL_BACKEND_URL;
+    console.log(backendUrl);
+    const response = await fetch(
+      `${import.meta.env.VITE_LOCAL_BACKEND_URL}/search`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: promptText,
+          session_id: toString(session_id),
+        }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Network response was not ok");
@@ -50,30 +54,19 @@ export default function Search({ addMessage, session_id }) {
     const data = await response.json();
     console.log(data);
     addMessage("ai", data);
-    // setAiResponse(
-    //   "The penguin is a fascinating bird perfectly adapted to life in the cold Antarctic regions. With its distinctive black and white plumage, streamlined body, and flipper-like wings, the penguin is an agile swimmer and expert diver, hunting for fish, krill, and squid underwater. Penguins are highly social animals, often gathering in large colonies for breeding and protection. They have a unique waddling gait on land but are graceful and swift in the water, using their flippers to propel themselves through the icy seas. Known for their resilience in harsh environments, penguins evoke a sense of curiosity and admiration for their ability to thrive in one of Earth's most extreme habitats."
-    // );
-
-    // Clear the prompt after generating response
-    setPromptText("");
   };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       if (e.shiftKey) {
-        // Insert a new line when Shift+Enter is pressed
         e.preventDefault();
         setPromptText((prev) => prev + "\n");
       } else {
-        // Handle Enter key press
         e.preventDefault();
 
-        // Check if promptText is empty
         if (promptText.trim() === "") {
-          // Just add a new line if the prompt is empty
           setPromptText((prev) => prev + "\n");
         } else {
-          // Otherwise, generate the response
           handleGenerate();
         }
       }
@@ -115,7 +108,7 @@ export default function Search({ addMessage, session_id }) {
       <div className="flex w-full items-center justify-end gap-4 px-2.5 py-2">
         <div className="flex items-center gap-2">
           {/* Your buttons */}
-          <button
+          {/* <button
             className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none focus-visible:text-neutral-600 focus-visible:outline focus-visible:outline-offset-0 focus-visible:outline-black active:bg-neutral-950/5 active:-outline-offset-2 dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300 dark:focus-visible:text-neutral-300 dark:focus-visible:outline-white dark:active:bg-white/5"
             title="Use Camera"
             aria-label="Use Camera"
@@ -137,7 +130,7 @@ export default function Search({ addMessage, session_id }) {
             aria-label="Use Voice"
           >
             <Voice />
-          </button>
+          </button> */}
         </div>
 
         <button
