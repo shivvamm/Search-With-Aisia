@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import chat,search
 from typing import Dict
 import os
-from config.llm import llm,chat,audiomodel,client
+from config.llm import llm,client
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -41,7 +41,7 @@ async def health_check():
         ]
         await  llm.invoke(messages)
 
-        await chat_completion = client.chat.completions.create(
+        chat_completion = await client.chat.completions.create(
         messages=[
             {
                 "role": "user",
