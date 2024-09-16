@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from routers import chat,search
 from typing import Dict
+from langchain_core.prompts import ChatPromptTemplate
 import os
 from config.llm import llm,client
 from dotenv import load_dotenv
@@ -35,11 +36,12 @@ async def health_check():
     Health check endpoint that returns the status of the application.
     """
     try:
+        
         messages = [
         ("system", "You are a helpful translator. Translate the user sentence to French."),
         ("human", "I love programming."),
         ]
-        await  llm.invoke(messages)
+        response  = await llm.ainvoke(messages)
 
         chat_completion = await client.chat.completions.create(
         messages=[
@@ -47,15 +49,15 @@ async def health_check():
                 "role": "user",
                 "content": "Explain the importance of low latency LLMs",
             }
-        ],
+            ],
         model="llama3-8b-8192",
-        )
+    )
+        return {"status": "healthy"}
+    
     except Exception as e:
-        # Log the exception and return a 500 error response
         print(f"Health check failed: {e}")
         raise HTTPException(status_code=500, detail="Health check failed")
 
-        return {"status": "healthy"}
 
 if __name__ == "__main__":
     import uvicorn
