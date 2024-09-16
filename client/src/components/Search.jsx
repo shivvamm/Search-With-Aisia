@@ -32,7 +32,7 @@ export default function Search({ addMessage, session_id }) {
       return;
     }
     addMessage("user", promptText);
-    const response = await fetch("http://localhost:8000/search", {
+    const response = await fetch(`${meta.env.BACKEND_URL}search`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
