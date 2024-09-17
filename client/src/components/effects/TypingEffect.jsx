@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Markdown from "react-markdown";
 
 const TypingEffect = ({ text, speed }) => {
   const [displayedText, setDisplayedText] = useState("");
-
+  const textRef = useRef(null);
   useEffect(() => {
     let index = 0;
     const timer = setInterval(() => {
