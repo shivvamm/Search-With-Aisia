@@ -47,13 +47,13 @@ export default function Chats({ messages }) {
                   {msg.content}
                 </p>
                 <div className="mt-2 flex items-center gap-2">
-                  <button
+                  {/* <button
                     className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300"
                     title="Edit"
                     aria-label="Edit your input"
                   >
                     <Edit />
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>

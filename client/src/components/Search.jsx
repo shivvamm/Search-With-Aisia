@@ -3,9 +3,10 @@ import Generate from "./icons/Generate";
 import Voice from "./icons/Voice";
 import Image from "./icons/Image";
 import Camera from "./icons/Camera";
+import ToggleButtonGroup from "./effects/ToggleButtonGroup";
 export default function Search({ addMessage, uuid_session_id }) {
   const [promptText, setPromptText] = useState("");
-
+  const [activeButtons, setActiveButtons] = useState([]);
   // List items
   const items = [
     // "a penguin swimming in the ocean",
@@ -42,6 +43,7 @@ export default function Search({ addMessage, uuid_session_id }) {
         body: JSON.stringify({
           query: promptText,
           session_id: uuid_session_id,
+          search_type: activeButtons,
         }),
       }
     );
@@ -136,6 +138,10 @@ export default function Search({ addMessage, uuid_session_id }) {
           </button> */}
           </div>
 
+          <ToggleButtonGroup
+            activeButtons={activeButtons}
+            setActiveButtons={setActiveButtons}
+          />
           <button
             type="button"
             onClick={handleGenerate}

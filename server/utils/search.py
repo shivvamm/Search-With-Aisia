@@ -1,7 +1,7 @@
 from duckduckgo_search import AsyncDDGS
 from typing import List, Dict
 
-# DuckDuckGo API initialization
+
 addgs = AsyncDDGS()
 
 
@@ -30,13 +30,15 @@ async def search_handler(query: str, search_type: str):
         results = list(await addgs.atext(query,max_results=10))
         return results
     elif search_type == "images":
-        results = list(await addgs.images(query))
+        results = list(await addgs.images(query,max_results=5))
         return results
     elif search_type == "news":
-        results = list(await addgs.news(query))
+        results = list(await addgs.news(query,max_results=10))
         return results
     elif search_type == "maps":
-        results = list(await addgs.maps(query))
+        results = list(await addgs.maps(query,max_results=5))
+    elif search_type == "videos":
+        results = list(await addgs.videos(query,max_results=5))
         return results
     else:
         raise ValueError("Invalid search type")

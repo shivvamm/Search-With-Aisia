@@ -10,12 +10,16 @@ router = APIRouter()
 @router.post("/search")
 async def search(query: Query, search_type: Optional[str] = "text"):
     try:
-        valid_search_types = {"text", "images", "news", "maps"}
+        valid_search_types = ["Text", "Images", "News", "Maps","Vidoes"]
         if search_type not in valid_search_types:
             return JSONResponse(
                 status_code=400,
                 content={"status": "error", "message": "Invalid search type provided."}
             )
+        resources = []          
+        if len(query.search_type) > 0:
+            for i in query.search_type:
+                resources.append(await search_handler(query.query, i.lower()))
         to_sreach = await get_descision(query.query)
         print("this is the value of to searh",type(to_sreach))
 
@@ -29,6 +33,7 @@ async def search(query: Query, search_type: Optional[str] = "text"):
             content={
                 "status": "success",
                 "data": response,
+                "resources": resources,
                 "message": "Search completed successfully."
             }
         )
