@@ -62,27 +62,24 @@ async def get_descision(query: str):
     
         if flag:
             output= True
-            print(type(flag))
-            print("The value is True.")
         else:
             output = False
-            print("The value is False.")
     else:
         output = False
-        print("No match found.")
     print(output)
     return output
 
 
 async def chat_handler(query: str,session_id:str,results: dict) -> dict:
     try:
-        if results is "":
+        if results == "":
             prompt = system_without_results
             context = "" 
         else:
             prompt = system_with_results
             context = format_search_results(results) 
 
+        # print(prompt)
         rag_chain = prompt | llm | StrOutputParser()
         with_message_history = RunnableWithMessageHistory(
                 rag_chain,

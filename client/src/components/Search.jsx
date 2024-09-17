@@ -3,10 +3,8 @@ import Generate from "./icons/Generate";
 import Voice from "./icons/Voice";
 import Image from "./icons/Image";
 import Camera from "./icons/Camera";
-export default function Search({ addMessage, session_id }) {
+export default function Search({ addMessage, uuid_session_id }) {
   const [promptText, setPromptText] = useState("");
-  const [aiResponse, setAiResponse] = useState("");
-  const [userPrompt, setUserPrompt] = useState("");
 
   // List items
   const items = [
@@ -33,8 +31,9 @@ export default function Search({ addMessage, session_id }) {
     setPromptText("");
     const backendUrl = import.meta.env.VITE_LOCAL_BACKEND_URL;
     console.log(backendUrl);
+    console.log(uuid_session_id);
     const response = await fetch(
-      `${import.meta.env.VITE_LOCAL_BACKEND_URL}/search`,
+      `${import.meta.env.VITE_LOCAL_BACKEND_URL}/search?search_type=text`,
       {
         method: "POST",
         headers: {
@@ -42,7 +41,7 @@ export default function Search({ addMessage, session_id }) {
         },
         body: JSON.stringify({
           query: promptText,
-          session_id: toString(session_id),
+          session_id: uuid_session_id,
         }),
       }
     );

@@ -2,15 +2,16 @@ import "./App.css";
 import Search from "./components/Search";
 import Chats from "./components/Chats";
 import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 function App() {
   const [messages, setMessages] = useState([]);
 
-  const [sessionId, setSessionId] = useState(""); // State for session ID
+  const [uuid_session_id, setUuidSessionId] = useState("");
 
   useEffect(() => {
-    const initialSessionId = Math.random().toString(36).substr(2, 9);
-    setSessionId(initialSessionId);
+    const initialSessionId = uuidv4();
+    setUuidSessionId(initialSessionId);
     console.log(initialSessionId);
   }, []);
 
@@ -22,7 +23,7 @@ function App() {
       {/* Main content */}
       <Chats messages={messages} />
       <div className="fixed bottom-0 w-full p-4">
-        <Search addMessage={addMessage} sessionId={sessionId} />
+        <Search addMessage={addMessage} uuid_session_id={uuid_session_id} />
       </div>
     </div>
   );
