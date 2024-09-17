@@ -16,7 +16,11 @@ function App() {
   }, []);
 
   const addMessage = (type, content) => {
-    setMessages((prevMessages) => [...prevMessages, { type, content }]);
+    if (content) {
+      setMessages((prevMessages) => [...prevMessages, { type, content }]);
+    } else {
+      console.error("Content is undefined or null");
+    }
   };
   return (
     <div className="flex flex-col h-screen items-center bg-gray-100 overflow-y-auto dark:bg-gray-900">

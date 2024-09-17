@@ -20,7 +20,6 @@ def format_search_results(results: List[Dict[str, str]]) -> str:
             "---"
         )
     
-    # Join all the formatted results with a newline character
     return "\n".join(formatted_results)
 
 
