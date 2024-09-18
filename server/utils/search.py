@@ -1,8 +1,18 @@
 from duckduckgo_search import AsyncDDGS
 from typing import List, Dict
+from fp.fp import FreeProxy
+import requests
+
+def test_proxy(proxy):
+    try:
+        response = requests.get("http://httpbin.org/ip", proxies={"http": proxy, "https": proxy}, timeout=5)
+        print("Proxy is working:", response.json())
+        return True
+    except requests.exceptions.RequestException as e:
+        print("Proxy failed:", e)
+        return False
 
 
-addgs = AsyncDDGS()
 
 
 def format_search_results(results: List[Dict[str, str]]) -> str:
@@ -25,20 +35,24 @@ def format_search_results(results: List[Dict[str, str]]) -> str:
 
 
 async def search_handler(query: str, search_type: str):
-    
+    addgs = AsyncDDGS()
+    # proxy = FreeProxy(timeout=90, rand=True).get()
+    # if proxy:
+    #     print(f"Using proxy: {proxy}")
+    #     addgs = AsyncDDGS(proxy=proxy)
     if search_type == "text":
         results = list(await addgs.atext(query,max_results=10))
         return results
-    elif search_type == "images":
-        results = list(await addgs.images(query,max_results=5))
+    elif search_type == "image":
+        results = list(await addgs.aimages(query,max_results=5))
         return results
     elif search_type == "news":
-        results = list(await addgs.news(query,max_results=10))
+        results = list(await addgs.anews(query,max_results=5))
         return results
     elif search_type == "maps":
-        results = list(await addgs.maps(query,max_results=5))
-    elif search_type == "videos":
-        results = list(await addgs.videos(query,max_results=5))
+        results = list(await addgs.amaps(query,max_results=5))
+    elif search_type == "video":
+        results = list(await addgs.avideos(query,max_results=5))
         return results
     else:
         raise ValueError("Invalid search type")

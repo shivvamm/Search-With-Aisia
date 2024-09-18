@@ -4,6 +4,7 @@ import Voice from "./icons/Voice";
 import Image from "./icons/Image";
 import Camera from "./icons/Camera";
 import ToggleButtonGroup from "./effects/ToggleButtonGroup";
+
 export default function Search({ addMessage, uuid_session_id }) {
   const [promptText, setPromptText] = useState("");
   const [activeButtons, setActiveButtons] = useState([]);
@@ -33,8 +34,20 @@ export default function Search({ addMessage, uuid_session_id }) {
     const backendUrl = import.meta.env.VITE_LOCAL_BACKEND_URL;
     console.log(backendUrl);
     console.log(uuid_session_id);
+    console.log(activeButtons.length);
+    const searchType = activeButtons.length === 0 ? "text" : "other";
+    console.log(searchType);
+    console.log("This is the parameters searchtype ", searchType);
+    const body = JSON.stringify({
+      query: promptText,
+      session_id: uuid_session_id,
+      search_type_resources: activeButtons,
+    });
+    console.log(body);
     const response = await fetch(
-      `${import.meta.env.VITE_LOCAL_BACKEND_URL}/search?search_type=text`,
+      `${
+        import.meta.env.VITE_LOCAL_BACKEND_URL
+      }/search?search_type=${searchType}`,
       {
         method: "POST",
         headers: {
@@ -43,7 +56,7 @@ export default function Search({ addMessage, uuid_session_id }) {
         body: JSON.stringify({
           query: promptText,
           session_id: uuid_session_id,
-          search_type: activeButtons,
+          search_type_resources: activeButtons,
         }),
       }
     );

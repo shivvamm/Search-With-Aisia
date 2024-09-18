@@ -2,7 +2,7 @@ import os
 import re
 from fastapi import HTTPException , status
 from datetime import datetime
-from constants.prompts import user_message_without_results, user_message_with_results
+from constants.prompts import user_message_without_resources, user_message_with_resources
 from groq import AsyncGroq
 from config.llm import llm,chat
 from langchain_core.pydantic_v1 import BaseModel, Field
@@ -21,17 +21,17 @@ class descision(BaseModel):
     to_search: bool = Field(description="Ture if there is a need to search the web for the query and if not need to search the web then False")
    
 
-system_without_results = ChatPromptTemplate.from_messages(
+system_without_resources = ChatPromptTemplate.from_messages(
     [
-        ("system", user_message_without_results),
+        ("system", user_message_without_resources),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{input}"),
     ]
 )
 
-system_with_results = ChatPromptTemplate.from_messages(
+system_with_resources = ChatPromptTemplate.from_messages(
     [
-        ("system", user_message_with_results),
+        ("system", user_message_with_resources),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{input}"),
     ]
@@ -70,16 +70,16 @@ async def get_descision(query: str):
     return output
 
 
-async def chat_handler(query: str,session_id:str,results: dict) -> dict:
+async def chat_handler(query,session_id,results,resources):
     try:
-        if results == "":
-            prompt = system_without_results
+        if resources == "":
+            prompt = system_without_resources
             context = "" 
         else:
-            prompt = system_with_results
+            prompt = system_with_resources
             context = format_search_results(results) 
 
-        # print(prompt)
+
         rag_chain = prompt | llm | StrOutputParser()
         with_message_history = RunnableWithMessageHistory(
                 rag_chain,
@@ -90,7 +90,7 @@ async def chat_handler(query: str,session_id:str,results: dict) -> dict:
         context = format_search_results(results)
 
         final_response = await with_message_history.ainvoke(
-                {"context": context, "input": query},
+                {"context": context,"resources": resources, "input": query},
                 config={"configurable": {"session_id": session_id}},
             )
         response_data = {
@@ -115,7 +115,6 @@ async def transcribe_audio(file_content: bytes, file_name: str = "audio.m4a") ->
     :return: The transcription text.
     """
     try:
-        # Create a transcription of the audio file
         transcription = await client.audio.transcriptions.create(
             file=(file_name, file_content), 
             model="distil-whisper-large-v3-en", 

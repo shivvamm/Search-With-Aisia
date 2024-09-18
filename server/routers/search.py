@@ -1,4 +1,5 @@
-from fastapi import APIRouter,HTTPException,Query
+import asyncio
+from fastapi import APIRouter,HTTPException,Query,status
 from fastapi.responses import JSONResponse
 from models.schemas import Query
 from typing import Optional,List
@@ -7,36 +8,57 @@ from utils.chat import get_descision,chat_handler
 router = APIRouter()
 
 
-@router.post("/search")
-async def search(query: Query, search_type: Optional[str] = "text"):
+@router.post("/search",status_code=status.HTTP_200_OK)
+async def search(query: Query, search_type: str):
     try:
-        valid_search_types = ["Text", "Images", "News", "Maps","Vidoes"]
-        if search_type not in valid_search_types:
+        resources = []
+        results=[]
+        response=""
+        if search_type == "text":
+            to_sreach = await get_descision(query.query)
+            
+            if to_sreach:
+                results = await search_handler(query.query, search_type)
+                response = await chat_handler(query.query,query.session_id,results,resources="")
+            else:
+                response = await chat_handler(query.query,query.session_id,results="",resources="")
             return JSONResponse(
-                status_code=400,
-                content={"status": "error", "message": "Invalid search type provided."}
-            )
-        resources = []          
-        if len(query.search_type) > 0:
-            for i in query.search_type:
-                resources.append(await search_handler(query.query, i.lower()))
-        to_sreach = await get_descision(query.query)
-        print("this is the value of to searh",type(to_sreach))
-
-        if to_sreach:
-            results = await search_handler(query.query, search_type)
-            response = await chat_handler(query.query,query.session_id,results)
-        else:
-            response = await chat_handler(query.query,query.session_id,results="")
-        return JSONResponse(
-            status_code=200,
+            status_code=status.HTTP_200_OK,
             content={
-                "status": "success",
+                "status": status.HTTP_200_OK,
                 "data": response,
                 "resources": resources,
                 "message": "Search completed successfully."
             }
         )
+        
+        elif search_type == "other":
+            print(query.search_type_resources)
+            valid_search_types = ["Image", "News", "Maps","Video"]
+            requested_search_type = query.search_type_resources
+            if not all(item in valid_search_types for item in requested_search_type):
+                return JSONResponse(
+                status_code=400,
+                content={"status": "error", "message": "Invalid search type provided."}
+                )     
+            results=await search_handler(query.query, "text")
+            if len(query.search_type_resources) > 0:
+                resources = await asyncio.gather(*(search_handler(query.query, i.lower()) for i in requested_search_type))
+                # for i in query.search_type_resources:
+                    # resources.append(search_handler(query.query, i.lower()))
+                    
+
+
+            response = await chat_handler(query.query,query.session_id,results,resources)
+            return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "status": status.HTTP_200_OK,
+                "data": response,
+                "resources": resources,
+                "message": "Search completed successfully."
+            }
+            )
     except HTTPException as http_exc:
         raise http_exc
     

@@ -42,24 +42,24 @@ export default function Chats({ messages }) {
         <div key={index}>
           {msg.type === "user" ? (
             <div className="w-full flex justify-end mb-4">
-              <div className="w-full max-w-xs lg:max-w-lg border-neutral-300 bg-neutral-50 p-6 text-left dark:border-neutral-700 dark:bg-neutral-900 rounded-md">
-                <p className="text-justify mt-4 text-sm text-neutral-600 dark:text-neutral-300">
+              <div className="w-full max-w-xs lg:max-w-lg border-neutral-300 bg-neutral-50 p-6 text-left dark:border-neutral-700 dark:bg-neutral-900 rounded-full">
+                <p className="text-justify text-sm text-neutral-600 dark:text-neutral-300">
                   {msg.content}
                 </p>
-                <div className="mt-2 flex items-center gap-2">
-                  {/* <button
+                {/* <div className="mt-2 flex items-center gap-2">
+                  <button
                     className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300"
                     title="Edit"
                     aria-label="Edit your input"
                   >
                     <Edit />
-                  </button> */}
-                </div>
+                  </button>
+                </div> */}
               </div>
             </div>
           ) : (
             <div className="w-full flex justify-start mb-4">
-              <div className="w-full p-6 text-left rounded-md bg-neutral-50 dark:bg-neutral-900">
+              <div className="w-full p-6 text-left rounded-md  dark:bg-neutral-900">
                 <div className="flex items-center gap-2 text-neutral-900 dark:text-white">
                   <span className="flex w-8 h-8 items-center justify-center rounded-full bg-black text-neutral-100 dark:bg-white dark:text-black">
                     <Bot />
@@ -135,7 +135,7 @@ export default function Chats({ messages }) {
           )}
         </div>
       ))}
-      <div className="" style={{ marginTop: "170px" }}></div>
+      <div className="" style={{ marginTop: "180px" }}></div>
     </div>
   );
 }

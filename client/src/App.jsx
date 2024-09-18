@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from "uuid";
 
 function App() {
   const [messages, setMessages] = useState([]);
-
   const [uuid_session_id, setUuidSessionId] = useState("");
 
   useEffect(() => {
@@ -22,11 +21,11 @@ function App() {
       console.error("Content is undefined or null");
     }
   };
+
   return (
-    <div className="flex flex-col h-screen items-center bg-gray-100 overflow-y-auto dark:bg-gray-900">
-      {/* Main content */}
+    <div className="flex flex-col  items-center bg-gray-100 overflow-hidden dark:bg-gray-900">
       <Chats messages={messages} />
-      <div className="fixed bottom-0 w-full p-4">
+      <div className="w-full p-4 fixed bottom-0">
         <Search addMessage={addMessage} uuid_session_id={uuid_session_id} />
       </div>
     </div>

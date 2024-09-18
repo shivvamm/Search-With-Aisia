@@ -14,7 +14,7 @@ const ToggleButton = ({ label, isActive, onClick }) => (
 );
 
 const ToggleButtonGroup = ({ activeButtons, setActiveButtons }) => {
-  const buttons = ["Image", "Text", "Video", "News", "Maps"];
+  const buttons = ["Image", "Video", "News", "Maps"];
 
   const handleClick = (label) => {
     const newActiveButtons = activeButtons.includes(label)
