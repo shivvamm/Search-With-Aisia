@@ -37,7 +37,7 @@ export default function Chats({ messages }) {
   };
 
   return (
-    <div className="flex-grow flex-shrink-0 lg:w-[80%] w-full p-4">
+    <div className="flex-grow flex-shrink-0 lg:w-[60%] w-full p-4">
       {messages.map((msg, index) => (
         <div key={index}>
           {msg.type === "user" ? (
