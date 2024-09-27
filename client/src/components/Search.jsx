@@ -47,7 +47,7 @@ export default function Search({ addMessage, uuid_session_id }) {
     const response = await fetch(
       `${
         import.meta.env.VITE_LOCAL_BACKEND_URL
-      }/search?search_type=${searchType}`,
+      }/searchnew?search_type=${searchType}`,
       {
         method: "POST",
         headers: {

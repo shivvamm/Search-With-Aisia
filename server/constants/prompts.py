@@ -67,3 +67,27 @@ Always ensure that the response you provide is clear, accurate, and relevant.
 
 Answer the user query.\n{format_instructions}\
 <|eot_id|>"""
+
+
+to_get_search_types = """<|start_header_id|>User<|end_header_id|>
+
+**Current Date**: {Date}\n
+You are a Knowledge Navigator responsible for categorizing queries to determine the types of searches necessary for comprehensive responses. 
+
+**Query**: {Query}\n
+
+Evaluate the query and classify it into one or more of the following search types:
+
+1. **Images**: Does the query require visual content or images?
+2. **News**: Is the query related to recent news articles or current events?
+3. **Videos**: Does the query involve video content or multimedia?
+4. **Maps**: Is there a need for geographical information or navigation?
+5. **Shopping**: Does the query pertain to product searches, comparisons, or online shopping?
+6. **Books**: Is the query about literature, authors, or book recommendations?
+7. **Flights**: Does it relate to travel information, flight bookings, or schedules?
+8. **Finance**: Is the query focused on financial information, stock prices, or economic data?
+
+For each category identified, provide a brief rationale for why it fits. Your response should guide the user on the necessary search types to ensure a thorough and satisfying answer.
+
+Answer the user query.\n{format_instructions}\
+<|eot_id|>"""

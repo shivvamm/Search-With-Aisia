@@ -4,6 +4,7 @@ from fastapi import HTTPException , status
 from datetime import datetime
 from constants.prompts import user_message_without_resources, user_message_with_resources
 from groq import AsyncGroq
+from typing import List
 from config.llm import llm,chat
 from langchain_core.pydantic_v1 import BaseModel, Field
 from utils.search import format_search_results
@@ -12,7 +13,7 @@ from langchain_core.output_parsers import StrOutputParser,JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder,PromptTemplate
 from langchain_community.chat_message_histories import RedisChatMessageHistory
 from dotenv import load_dotenv
-from constants.prompts import to_search_or_not
+from constants.prompts import to_search_or_not,to_get_search_types
 
 load_dotenv()
 parser = JsonOutputParser()
@@ -20,6 +21,12 @@ parser = JsonOutputParser()
 class descision(BaseModel):
     to_search: bool = Field(description="Ture if there is a need to search the web for the query and if not need to search the web then False")
    
+class SearchDecision(BaseModel):
+    search_types: List[str] = Field(
+        default_factory=list,
+        description="A list of types of searches needed (e.g., images, news, videos, maps, shopping, books, flights, finance)."
+    )
+
 
 system_without_resources = ChatPromptTemplate.from_messages(
     [
@@ -67,6 +74,18 @@ async def get_descision(query: str):
     else:
         output = False
     print(output)
+    return output
+
+
+
+async def get_search_type(query: str):
+    current_date = datetime.now()
+    formatted_date = current_date.strftime("%d %B %Y")
+    parser = JsonOutputParser(pydantic_object=SearchDecision)
+    prompt = PromptTemplate(template=to_get_search_types,input_variables=["Query","Date"],partial_variables={"format_instructions": parser.get_format_instructions()})
+    chain = prompt | chat | parser
+    output = chain.invoke({"Query":query,"Date":formatted_date})
+    print(type(output))
     return output
 
 
