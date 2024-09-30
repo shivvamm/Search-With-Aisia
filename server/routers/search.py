@@ -93,23 +93,23 @@ async def search(query: Query, search_type: str):
         response=""
         search_type = await get_search_type(query.query)
         print(search_type)
-        # if search_type == "text":
-        #     to_sreach = await get_descision(query.query)
+        if "Text" in search_type:
+            to_sreach = await get_descision(query.query)
             
-        #     if to_sreach:
-        #         results = await search_handler(query.query, search_type)
-        #         response = await chat_handler(query.query,query.session_id,results,resources="")
-        #     else:
-        #         response = await chat_handler(query.query,query.session_id,results="",resources="")
-        #     return JSONResponse(
-        #     status_code=status.HTTP_200_OK,
-        #     content={
-        #         "status": status.HTTP_200_OK,
-        #         "data": response,
-        #         "resources": resources,
-        #         "message": "Search completed successfully."
-        #     }
-        # )
+            if to_sreach:
+                results = await search_handler(query.query, search_type)
+                response = await chat_handler(query.query,query.session_id,results,resources="")
+            else:
+                response = await chat_handler(query.query,query.session_id,results="",resources="")
+            return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "status": status.HTTP_200_OK,
+                "data": response,
+                "resources": resources,
+                "message": "Search completed successfully."
+            }
+        )
         
         # elif search_type == "other":
         #     print(query.search_type_resources)
