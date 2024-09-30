@@ -127,25 +127,25 @@ export default function Chats({ messages }) {
                   </button>
                 </div>
                 {/* Render Resources */}
-                {msg.content?.resources && msg.content.resources.length > 0 && (
-                  <div className="mt-4">
-                    {msg.content.resources.map((resource, index) => (
-                      <div key={index} className="mb-2">
-                        <a
-                          href={resource.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline"
-                        >
-                          {resource.title}
-                        </a>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-300">
-                          {resource.body}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {msg.content.resources?.Images &&
+                  msg.content.resources.Images.length > 0 && (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {msg.content?.resources &&
+                        msg.content.resources.Images.length > 0 &&
+                        msg.content.resources.Images.map((image, index) => (
+                          <div
+                            key={index}
+                            className="overflow-hidden rounded-lg"
+                          >
+                            <img
+                              className="h-auto max-w-full"
+                              src={image.murl}
+                              alt={image.image_name}
+                            />
+                          </div>
+                        ))}
+                    </div>
+                  )}
               </div>
             </div>
           )}

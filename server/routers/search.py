@@ -133,7 +133,7 @@ async def search(query: Query, search_type: str):
                 elif i == "News":
                     bing_search = BingSearch(max_pages=2)  
                     news_results = bing_search.search_news(query=query.query, num_news=5)
-                    resources.append(news_results)
+                    resources["News"] = news_results
             # resources = await asyncio.gather(*(search_handler(query.query, i.lower()) for i in requested_search_type))
             #     # for i in query.search_type_resources:
             #         # resources.append(search_handler(query.query, i.lower()))
