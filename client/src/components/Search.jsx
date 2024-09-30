@@ -151,10 +151,10 @@ export default function Search({ addMessage, uuid_session_id }) {
           </button> */}
           </div>
 
-          <ToggleButtonGroup
+         {/* <ToggleButtonGroup
             activeButtons={activeButtons}
             setActiveButtons={setActiveButtons}
-          />
+          />*/}
           <button
             type="button"
             onClick={handleGenerate}

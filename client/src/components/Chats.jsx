@@ -46,15 +46,6 @@ export default function Chats({ messages }) {
                 <p className="text-justify text-sm text-neutral-600 dark:text-neutral-300">
                   {msg.content}
                 </p>
-                {/* <div className="mt-2 flex items-center gap-2">
-                  <button
-                    className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300"
-                    title="Edit"
-                    aria-label="Edit your input"
-                  >
-                    <Edit />
-                  </button>
-                </div> */}
               </div>
             </div>
           ) : (
@@ -67,26 +58,29 @@ export default function Chats({ messages }) {
                   <span className="text-sm font-bold">Alisia AI</span>
                 </div>
 
-                <TypingEffect
-                  text={msg.content.data.refined_results}
-                  speed={5}
-                />
+                {msg.content?.data?.refined_results && (
+                  <TypingEffect
+                    text={msg.content.data.refined_results}
+                    speed={5}
+                  />
+                )}
 
                 <div className="mt-2 flex items-center gap-2">
                   <button
-                    className="rounded-full w-fit p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none focus-visible:text-neutral-600 focus-visible:outline focus-visible:outline-offset-0 focus-visible:outline-black active:bg-neutral-950/5 active:-outline-offset-2 dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300 dark:focus-visible:text-neutral-300 dark:focus-visible:outline-white dark:active:bg-white/5"
+                    className="rounded-full w-fit p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300"
                     title="Copy"
                     aria-label="Copy"
                     onClick={() =>
-                      copyToClipboard(msg.content.data.refined_results)
+                      copyToClipboard(msg.content?.data?.refined_results)
                     }
                   >
                     <span className="sr-only">
-                      {copiedToClipboard === msg.content.data.refined_results
+                      {copiedToClipboard === msg.content?.data?.refined_results
                         ? "Copied"
                         : "Copy the response to clipboard"}
                     </span>
-                    {copiedToClipboard === msg.content.data.refined_results ? (
+                    {copiedToClipboard ===
+                    msg.content?.data?.refined_results ? (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 16 16"
@@ -125,11 +119,33 @@ export default function Chats({ messages }) {
                     className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300"
                     title="Read Aloud"
                     aria-label="Read Aloud"
-                    onClick={() => readAloud(msg.content.data.refined_results)}
+                    onClick={() =>
+                      readAloud(msg.content?.data?.refined_results)
+                    }
                   >
                     <Speak />
                   </button>
                 </div>
+                {/* Render Resources */}
+                {msg.content?.resources && msg.content.resources.length > 0 && (
+                  <div className="mt-4">
+                    {msg.content.resources.map((resource, index) => (
+                      <div key={index} className="mb-2">
+                        <a
+                          href={resource.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline"
+                        >
+                          {resource.title}
+                        </a>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-300">
+                          {resource.body}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}

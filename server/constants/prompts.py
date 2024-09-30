@@ -47,7 +47,7 @@ Using this context and the resources, combine the information with your existing
 If there are specific resources from the search results that can help in verifying or further understanding the information, include them as structured references in your response. This will help the user get a better grasp of the topic and verify the information if needed.
 
 Present the combined response in a way that directly addresses the user's query without suggesting additional sources or further verification unless necessary. Focus on delivering a complete and user-friendly answer.
-In the end with your response, give an refrence how to navigate the search results  and resources for better understanding.
+In the end with your response, give an refrence how to navigate the search results  and resources for better understanding but dont include any resources in your response.
 """
 
 
