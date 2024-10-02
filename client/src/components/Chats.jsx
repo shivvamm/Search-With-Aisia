@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Edit from "./icons/Edit";
 import Bot from "./icons/Bot";
 import Speak from "./icons/Speak";
@@ -7,6 +7,7 @@ import TypingEffect from "./effects/TypingEffect";
 export default function Chats({ messages }) {
   const [copiedToClipboard, setCopiedToClipboard] = useState(null);
   const targetTextRef = useRef(null);
+  const [loadingImages, setLoadingImages] = useState(true);
 
   const copyToClipboard = (text) => {
     if (text) {
@@ -126,24 +127,28 @@ export default function Chats({ messages }) {
                     <Speak />
                   </button>
                 </div>
-                {/* Render Resources */}
+
                 {msg.content.resources?.Images &&
                   msg.content.resources.Images.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {msg.content?.resources &&
                         msg.content.resources.Images.length > 0 &&
-                        msg.content.resources.Images.map((image, index) => (
-                          <div
-                            key={index}
-                            className="overflow-hidden rounded-lg"
-                          >
-                            <img
-                              className="h-auto max-w-full"
-                              src={image.murl}
-                              alt={image.image_name}
-                            />
-                          </div>
-                        ))}
+                        msg.content.resources.Images.map((image, index) =>
+                          loadingImages ? (
+                            <div className="skeleton h-32 w-32"></div>
+                          ) : (
+                            <div
+                              key={index}
+                              className="overflow-hidden rounded-lg"
+                            >
+                              <img
+                                className="h-auto max-w-full "
+                                src={image.murl}
+                                alt={image.image_name}
+                              />
+                            </div>
+                          )
+                        )}
                     </div>
                   )}
               </div>
