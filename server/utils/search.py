@@ -1,6 +1,5 @@
 from duckduckgo_search import AsyncDDGS
 from typing import List, Dict
-from fp.fp import FreeProxy
 import requests
 
 def test_proxy(proxy):
