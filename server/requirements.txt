@@ -7,3 +7,4 @@ duckduckgo_search==6.1.5
 pydantic==2.8.2
 langchain-groq
 uvicorn
+beautifulsoup4==4.12.3
