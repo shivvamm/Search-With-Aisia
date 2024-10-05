@@ -46,7 +46,7 @@ export default function Search({ addMessage, uuid_session_id }) {
     console.log(body);
     const response = await fetch(
       `${
-        import.meta.env.VITE_LOCAL_BACKEND_URL
+        import.meta.env.VITE_BACKEND_URL
       }/searchnew?search_type=${searchType}`,
       {
         method: "POST",
@@ -69,6 +69,7 @@ export default function Search({ addMessage, uuid_session_id }) {
     console.log(data);
     addMessage("ai", data);
   };
+
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {

@@ -38,7 +38,7 @@ export default function Chats({ messages }) {
   };
 
   return (
-    <div className="flex-grow flex-shrink-0 lg:w-[60%] w-full p-4">
+    <div className="flex-grow flex-shrink-0 lg:w-[60%] h-full  w-full p-4">
       {messages.map((msg, index) => (
         <div key={index}>
           {msg.type === "user" ? (
@@ -52,7 +52,7 @@ export default function Chats({ messages }) {
           ) : (
             <div className="w-full flex justify-start mb-4">
               <div className="w-full p-6 text-left rounded-md  dark:bg-neutral-900">
-                <div className="flex items-center gap-2 text-neutral-900 dark:text-white">
+                <div className="flex items-center gap-2 text-neutral-900 dark:text-white pb-2">
                   <span className="flex w-8 h-8 items-center justify-center rounded-full bg-black text-neutral-100 dark:bg-white dark:text-black">
                     <Bot />
                   </span>
