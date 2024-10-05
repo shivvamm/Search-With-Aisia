@@ -127,28 +127,21 @@ export default function Chats({ messages }) {
                     <Speak />
                   </button>
                 </div>
-
                 {msg.content.resources?.Images &&
                   msg.content.resources.Images.length > 0 && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {msg.content?.resources &&
-                        msg.content.resources.Images.length > 0 &&
-                        msg.content.resources.Images.map((image, index) =>
-                          loadingImages ? (
-                            <div className="skeleton h-32 w-32"></div>
-                          ) : (
-                            <div
-                              key={index}
-                              className="overflow-hidden rounded-lg"
-                            >
-                              <img
-                                className="h-auto max-w-full "
-                                src={image.murl}
-                                alt={image.image_name}
-                              />
-                            </div>
-                          )
-                        )}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-2">
+                      {msg.content.resources.Images.map((image, index) => (
+                        <div
+                          key={index}
+                          className="overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200"
+                        >
+                          <img
+                            className="w-full h-48 object-cover"
+                            src={image.murl}
+                            alt={image.image_name}
+                          />
+                        </div>
+                      ))}
                     </div>
                   )}
               </div>

@@ -5,6 +5,7 @@ from models.schemas import Query
 from typing import Optional,List
 from utils.search import search_handler
 from utils.scrape import  BingSearch
+from utils.scrapegoogle import GoogleScrape
 from utils.chat import get_descision,chat_handler,get_search_type
 router = APIRouter()
 
@@ -124,7 +125,7 @@ async def search(query: Query, search_type: str):
             for i in requested_search_type:
                 if i == "Images":
                     bing_search = BingSearch(max_pages=2)  
-                    image_results = bing_search.search_images(query=query.query, num_images=5)
+                    image_results = bing_search.search_images(query=query.query, num_images=8)
                     resources["Images"] = image_results
                 elif i == "Videos":
                     bing_search = BingSearch(max_pages=2)  
@@ -134,6 +135,22 @@ async def search(query: Query, search_type: str):
                     bing_search = BingSearch(max_pages=2)  
                     news_results = bing_search.search_news(query=query.query, num_news=5)
                     resources["News"] = news_results
+                elif i == "Shopping":
+                    google_search = GoogleScrape()
+                    shopping_results = google_search.scrape_shopping(query, num_results=5)
+                    resources["Shopping"] = news_results
+                elif i == "Books":
+                    google_search = GoogleScrape()
+                    books_results = google_search.scrape_books(query, num_results=5)
+                    resources["Books"] = books_results
+                elif i == "Flights":
+                    google_search = GoogleScrape()
+                    flights_results = google_search.scrape_flights(query, num_results=5)
+                    resources["Flights"] = flights_results
+                elif i == "Finance":
+                    google_search = GoogleScrape()
+                    finance_results = google_search.scrape_finance(query, num_results=5)
+                    resources["Finance"] = finance_results
             # resources = await asyncio.gather(*(search_handler(query.query, i.lower()) for i in requested_search_type))
             #     # for i in query.search_type_resources:
             #         # resources.append(search_handler(query.query, i.lower()))
@@ -163,3 +180,5 @@ async def search(query: Query, search_type: str):
             status_code=500,
             content={"status": "error", "message": "An unexpected error occurred. Please try again later."}
         )
+    
+
