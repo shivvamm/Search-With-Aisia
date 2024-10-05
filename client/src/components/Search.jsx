@@ -45,9 +45,7 @@ export default function Search({ addMessage, uuid_session_id }) {
     });
     console.log(body);
     const response = await fetch(
-      `${
-        import.meta.env.VITE_BACKEND_URL
-      }/searchnew?search_type=${searchType}`,
+      `https://search-with-alisia-1.onrender.com/searchnew?search_type=${searchType}`,
       {
         method: "POST",
         headers: {
