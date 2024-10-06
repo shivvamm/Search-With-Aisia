@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from models.schemas import Query
 from typing import Optional,List
 from utils.search import search_handler
-from utils.scrape import  BingSearch
+from utils.scrape import  BingSearch,is_valid_url
 from utils.scrapegoogle import GoogleScrape
 from utils.chat import get_descision,chat_handler,get_search_type
 router = APIRouter()
@@ -88,7 +88,7 @@ async def recommmendation(input:str):
     
 
 @router.post("/searchnew",status_code=status.HTTP_200_OK)
-async def search(query: Query, search_type: str):
+async def search_new(query: Query, search_type: str):
     try:
         resources = {}
         results=[]
@@ -125,32 +125,34 @@ async def search(query: Query, search_type: str):
             for i in requested_search_type:
                 if i == "Images":
                     bing_search = BingSearch(max_pages=2)  
-                    image_results = bing_search.search_images(query=query.query, num_images=8)
-                    resources["Images"] = image_results
+                    image_results = await bing_search.search_images(query=query.query, num_images=15)
+                    valid_images = []
+                    for image in image_results:
+                        if is_valid_url(image['murl']):
+                            valid_images.append(image)
+                            if len(valid_images) >= 8: 
+                                break
+                    resources["Images"] = valid_images
                 elif i == "Videos":
-                    bing_search = BingSearch(max_pages=2)  
-                    video_results = bing_search.search_videos(query=query.query, num_videos=5)
-                    resources["Videos"] = video_results
+                    google_search = GoogleScrape()
+                    resources["Videos"] = await google_search.scrape_videos(query.query, num_results=5)  # Await here
                 elif i == "News":
                     bing_search = BingSearch(max_pages=2)  
-                    news_results = bing_search.search_news(query=query.query, num_news=5)
-                    resources["News"] = news_results
+                    resources["News"] = await bing_search.search_news(query=query.query, num_news=5)  # Await here
                 elif i == "Shopping":
                     google_search = GoogleScrape()
-                    shopping_results = google_search.scrape_shopping(query, num_results=5)
-                    resources["Shopping"] = news_results
+                    resources["Shopping"] = await google_search.scrape_shopping(query.query, num_results=5)  # Await here
                 elif i == "Books":
                     google_search = GoogleScrape()
-                    books_results = google_search.scrape_books(query, num_results=5)
-                    resources["Books"] = books_results
+                    resources["Books"] = await google_search.scrape_books(query.query, num_results=5)  # Await here
                 elif i == "Flights":
                     google_search = GoogleScrape()
-                    flights_results = google_search.scrape_flights(query, num_results=5)
-                    resources["Flights"] = flights_results
+                    resources["Flights"] = await google_search.scrape_flights(query.query, num_results=5)  # Await here
                 elif i == "Finance":
                     google_search = GoogleScrape()
-                    finance_results = google_search.scrape_finance(query, num_results=5)
-                    resources["Finance"] = finance_results
+                    resources["Finance"] = await google_search.scrape_finance(query.query, num_results=5)  # Await here
+
+
             # resources = await asyncio.gather(*(search_handler(query.query, i.lower()) for i in requested_search_type))
             #     # for i in query.search_type_resources:
             #         # resources.append(search_handler(query.query, i.lower()))

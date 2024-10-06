@@ -68,7 +68,6 @@ export default function Search({ addMessage, uuid_session_id }) {
     addMessage("ai", data);
   };
 
-
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       if (e.shiftKey) {
@@ -150,7 +149,7 @@ export default function Search({ addMessage, uuid_session_id }) {
           </button> */}
           </div>
 
-         {/* <ToggleButtonGroup
+          {/* <ToggleButtonGroup
             activeButtons={activeButtons}
             setActiveButtons={setActiveButtons}
           />*/}

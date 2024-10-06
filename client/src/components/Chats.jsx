@@ -127,21 +127,21 @@ export default function Chats({ messages }) {
                     <Speak />
                   </button>
                 </div>
-                {msg.content.resources?.Images &&
-                  msg.content.resources.Images.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-2">
-                      {msg.content.resources.Images.map((image, index) => (
-                        <div
-                          key={index}
-                          className="overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200"
-                        >
-                          <img
-                            className="w-full h-48 object-cover"
-                            src={image.murl}
-                            alt={image.image_name}
-                          />
-                        </div>
-                      ))}
+                {msg.content.resources &&
+                  Object.keys(msg.content.resources).length > 0 && (
+                    <div className="pt-2">
+                      {Object.keys(msg.content.resources).length > 1 ? (
+                        <Tabs resources={msg.content.resources} />
+                      ) : (
+                        <ResourceDisplay
+                          resource={
+                            msg.content.resources[
+                              Object.keys(msg.content.resources)[0]
+                            ]
+                          }
+                          activeTab={Object.keys(msg.content.resources)[0]}
+                        />
+                      )}
                     </div>
                   )}
               </div>
@@ -153,3 +153,184 @@ export default function Chats({ messages }) {
     </div>
   );
 }
+
+const Tabs = ({ resources }) => {
+  const [activeTab, setActiveTab] = useState(Object.keys(resources)[0]);
+
+  return (
+    <div>
+      <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+        <ul className="flex flex-wrap -mb-px">
+          {Object.keys(resources).map((key) => (
+            <li key={key} className="me-2">
+              <button
+                className={`inline-block p-4 border-b-2 rounded-t-lg ${
+                  activeTab === key
+                    ? "text-blue-600 border-blue-600 dark:text-blue-500 dark:border-blue-500"
+                    : "border-transparent text-gray-500 hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                }`}
+                onClick={() => setActiveTab(key)}
+                aria-current={activeTab === key ? "page" : undefined}
+              >
+                {key}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <ResourceDisplay resource={resources[activeTab]} activeTab={activeTab} />
+    </div>
+  );
+};
+
+const ResourceDisplay = ({ resource, activeTab }) => {
+  if (activeTab === "Images" && resource.length > 0) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-2">
+        {resource.map((image, index) => (
+          <div
+            key={index}
+            className="overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200"
+          >
+            <a href={image.murl} target="_blank" rel="noopener noreferrer">
+              <img
+                className="w-full h-48 object-cover"
+                src={image.murl}
+                alt={image.image_name}
+              />
+            </a>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (activeTab === "News" && resource.length > 0) {
+    return (
+      <div className="mt-2">
+        {resource.map((video, index) => (
+          <div
+            key={index}
+            className="flex justify-between p-2 border-b border-gray-200"
+          >
+            <a
+              href={video.news_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              {video.title}
+            </a>
+            <p className="text-gray-500">{video.summary}</p>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (activeTab === "Videos" && resource.length > 0) {
+    return (
+      <div className="mt-2">
+        {resource.map((video, index) => (
+          <div
+            key={index}
+            className="flex justify-between p-2 border-b border-gray-200"
+          >
+            <a
+              href={video.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              {video.title}
+            </a>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (activeTab === "Finance" && resource.length > 0) {
+    return (
+      <div className="mt-2">
+        {resource.map((item, index) => (
+          <div
+            key={index}
+            className="flex justify-between p-2 border-b border-gray-200"
+          >
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              {item.title}
+            </a>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (activeTab === "Shopping" && resource.length > 0) {
+    return (
+      <div className="mt-2">
+        {resource.map((item, index) => (
+          <div
+            key={index}
+            className="flex justify-between p-2 border-b border-gray-200"
+          >
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              {item.title}
+            </a>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (activeTab === "Books" && resource.length > 0) {
+    return (
+      <div className="mt-2">
+        {resource.map((item, index) => (
+          <div
+            key={index}
+            className="flex justify-between p-2 border-b border-gray-200"
+          >
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              {item.title}
+            </a>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (activeTab === "Flights" && resource.length > 0) {
+    return (
+      <div className="mt-2">
+        {resource.map((item, index) => (
+          <div
+            key={index}
+            className="flex justify-between p-2 border-b border-gray-200"
+          >
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              {item.title}
+            </a>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};

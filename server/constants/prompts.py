@@ -72,7 +72,7 @@ Answer the user query.\n{format_instructions}\
 to_get_search_types = """<|start_header_id|>User<|end_header_id|>
 
 **Current Date**: {Date}\n
-You are a Knowledge Navigator responsible for categorizing queries to determine the types of searches necessary for comprehensive responses. 
+You are a Knowledge Navigator responsible for categorizing queries to determine the types of searches necessary for the best responses to the user. 
 
 **Query**: {Query}\n
 
@@ -87,7 +87,7 @@ Evaluate the query and classify it into one or more of the following search type
 7. **Flights**: Does it relate to travel information, flight bookings, or schedules?
 8. **Finance**: Is the query focused on financial information, stock prices, or economic data?
 
-For each category identified, provide a brief rationale for why it fits. Your response should guide the user on the necessary search types to ensure a thorough and satisfying answer.
+Your response should guide the user on the necessary search types to ensure a thorough and satisfying answer.
 
 Answer the user query.\n{format_instructions}\
 <|eot_id|>"""

@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import urllib.parse
-
+import httpx
 class GoogleScrape:
     def __init__(self):
         self.base_url = "https://www.google.com/search?q="
@@ -9,7 +9,7 @@ class GoogleScrape:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         }
 
-    def search(self, category, query, num_results):
+    async def search(self, category, query, num_results):
         search_query = f"{category} {query}"
         print(f"Searching for: {search_query}")
 
@@ -17,7 +17,8 @@ class GoogleScrape:
         url = f"{self.base_url}{urllib.parse.quote(search_query)}"
         
         
-        response = requests.get(url, headers=self.headers)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=self.headers)
 
         
         if response.status_code != 200:
@@ -38,17 +39,51 @@ class GoogleScrape:
 
         return results
 
-    def scrape_shopping(self, query, num_results=10):
-        return self.search("Shopping", query, num_results)
+    async def scrape_shopping(self, query, num_results=10):
+        return await self.search("Shopping", query, num_results)
 
-    def scrape_books(self, query, num_results=10):
-        return self.search("Books", query, num_results)
+    async def scrape_books(self, query, num_results=10):
+        return await self.search("Books", query, num_results)
 
-    def scrape_flights(self, query, num_results=10):
-        return self.search("Flights", query, num_results)
+    async def scrape_flights(self, query, num_results=10):
+        return await self.search("Flights", query, num_results)
 
-    def scrape_finance(self, query, num_results=10):
-        return self.search("Finance", query, num_results)
+    async def scrape_finance(self, query, num_results=10):
+        return await self.search("Finance", query, num_results)
+    
+    async def scrape_videos(self, query, num_results=10):
+        category = "Videos"
+        search_query = f"{category} {query}"
+        print(f"Searching for: {search_query}")
+
+        url = f"{self.base_url}{urllib.parse.quote(search_query)}"
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=self.headers)
+
+        if response.status_code != 200:
+            print(f"Failed to retrieve results for {search_query}")
+            return []
+
+        soup = BeautifulSoup(response.text, 'html.parser')
+        video_results = []
+
+        
+        search_results = soup.find_all('a', href=True)
+
+        for link in search_results:
+           
+            if 'video' in link['href'] or 'youtube.com' in link['href'] or 'vimeo.com' in link['href']:
+                title = link.get_text(strip=True) or "No title"
+                video_results.append({
+                    "title": title,
+                    "url": link['href']
+                })
+
+            if len(video_results) >= num_results:
+                break
+
+        return video_results
+
 
 # def main():
 #     scraper = GoogleScrape()
@@ -61,6 +96,7 @@ class GoogleScrape:
 #     books_results = scraper.scrape_books(query, num_results)
 #     flights_results = scraper.scrape_flights(query, num_results)
 #     finance_results = scraper.scrape_finance(query, num_results)
+#     videos_results = scraper.scrape_videos(query, num_results)
 
 #     print("\nShopping Results:")
 #     for result in shopping_results:
@@ -76,6 +112,10 @@ class GoogleScrape:
 
 #     print("\nFinance Results:")
 #     for result in finance_results:
+#         print(f"Title: {result['title']}, URL: {result['url']}")
+
+#     print("\nVideos Results:")
+#     for result in videos_results:
 #         print(f"Title: {result['title']}, URL: {result['url']}")
 
 # if __name__ == "__main__":

@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import urllib.request
 import json
+import requests
 import urllib.parse
 
 class BingSearch:
@@ -21,7 +22,7 @@ class BingSearch:
             urllib.request.Request(url, headers=self.header)),
             'html.parser')
 
-    def search_images(self, query=None, num_images=None):
+    async def search_images(self, query=None, num_images=None):
         query = query or self.default_query
         num_images = num_images or self.default_num_results
         
@@ -62,7 +63,7 @@ class BingSearch:
 
         return self.image_results
 
-    def search_videos(self, query=None, num_videos=None):
+    async def search_videos(self, query=None, num_videos=None):
         query = query or self.default_query
         num_videos = num_videos or self.default_num_results
         
@@ -100,7 +101,7 @@ class BingSearch:
 
         return self.video_results
 
-    def search_news(self, query=None, num_news=None):
+    async def search_news(self, query=None, num_news=None):
         query = query or self.default_query
         num_news = num_news or self.default_num_results
 
@@ -137,6 +138,14 @@ class BingSearch:
             current_page += 1  # Go to the next page
 
         return self.news_results
+
+
+def is_valid_url(url):
+    try:
+        response = requests.head(url, allow_redirects=True)
+        return response.status_code == 200
+    except requests.RequestException:
+        return False
 
 
 # if __name__ == "__main__":
