@@ -8,3 +8,4 @@ pydantic==2.8.2
 langchain-groq
 uvicorn
 beautifulsoup4==4.12.3
+redis==5.0.7
