@@ -3,11 +3,13 @@ import Generate from "./icons/Generate";
 import Voice from "./icons/Voice";
 import Image from "./icons/Image";
 import Camera from "./icons/Camera";
-import ToggleButtonGroup from "./effects/ToggleButtonGroup";
 
 export default function Search({ addMessage, uuid_session_id }) {
   const [promptText, setPromptText] = useState("");
   const [activeButtons, setActiveButtons] = useState([]);
+  const [lineCount, setLineCount] = useState(1);
+  const promptTextInputRef = useRef(null);
+  const promptTextRef = useRef(null);
   // List items
   const items = [
     // "a penguin swimming in the ocean",
@@ -20,8 +22,16 @@ export default function Search({ addMessage, uuid_session_id }) {
     setPromptText((prevPromptText) => `${prevPromptText} ${text}`);
   };
 
-  const handleChange = (e) => {
-    setPromptText(e.target.value);
+  const handleChange = () => {
+    if (promptTextInputRef.current) {
+      setPromptText(promptTextInputRef.current.innerText);
+    }
+  };
+
+  const handlePaste = (event) => {
+    event.preventDefault();
+    const text = event.clipboardData.getData("text/plain");
+    document.execCommand("insertText", false, text);
   };
 
   const handleGenerate = async () => {
@@ -30,6 +40,9 @@ export default function Search({ addMessage, uuid_session_id }) {
       return;
     }
     addMessage("user", promptText);
+    if (promptTextInputRef.current) {
+      promptTextInputRef.current.innerText = "";
+    }
     setPromptText("");
     const backendUrl = import.meta.env.VITE_LOCAL_BACKEND_URL;
     console.log(backendUrl);
@@ -45,7 +58,7 @@ export default function Search({ addMessage, uuid_session_id }) {
     });
     console.log(body);
     const response = await fetch(
-      `https://search-with-alisia-1.onrender.com/searchnew?search_type=${searchType}`,
+      `http://localhost:8000/searchnew?search_type=${searchType}`,
       {
         method: "POST",
         headers: {
@@ -70,15 +83,18 @@ export default function Search({ addMessage, uuid_session_id }) {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      if (e.shiftKey) {
-        e.preventDefault();
-        setPromptText((prev) => prev + "\n");
-      } else {
-        e.preventDefault();
+      e.preventDefault();
 
-        if (promptText.trim() === "") {
-          setPromptText((prev) => prev + "\n");
-        } else {
+      if (e.shiftKey) {
+        const range = document.createRange();
+        const selection = window.getSelection();
+        range.selectNodeContents(promptTextInputRef.current);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        document.execCommand("insertHTML", false, "<br><br>"); // Add a new line
+      } else {
+        if (promptText.trim() !== "") {
           handleGenerate();
         }
       }
@@ -103,56 +119,53 @@ export default function Search({ addMessage, uuid_session_id }) {
       ) : (
         <></>
       )}
-      <div className="bg-neutral-50 border-neutral-300 py-4 dark:border-neutral-700 dark:bg-neutral-900 rounded-md border">
+      <div className="flex w-full flex-col overflow-hidden border-neutral-300 bg-neutral-50 text-neutral-600 has-[p:focus]:outline has-[p:focus]:outline-2 has-[p:focus]:outline-offset-2 has-[p:focus]:outline-black dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:has-[p:focus]:outline-white rounded-md border">
         <div className="p-2">
           <p
             id="promptLabel"
             className="pb-1 pl-2 text-sm font-bold text-neutral-600 opacity-60 dark:text-neutral-300"
           >
-            Prompt
+            Message
           </p>
-          <textarea
-            className="bg-transparent border-none text-current placeholder-current p-2 overflow-y-auto max-h-44 w-full focus:outline-none"
+          <p
+            className="scroll-on max-h-36 w-full overflow-y-auto px-2 py-1 focus:outline-none"
             role="textbox"
             aria-labelledby="promptLabel"
-            value={promptText}
-            onChange={handleChange}
+            contentEditable
+            onInput={handleChange}
+            onPaste={handlePaste}
             onKeyDown={handleKeyDown}
-            placeholder="Type here..."
+            ref={promptTextInputRef}
           />
+          <textarea name="promptText" ref={promptTextRef} hidden />
         </div>
         <div className="flex w-full items-center justify-end gap-4 px-2.5 py-2">
           <div className="flex items-center gap-2">
-            {/* Your buttons */}
-            {/* <button
-            className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none focus-visible:text-neutral-600 focus-visible:outline focus-visible:outline-offset-0 focus-visible:outline-black active:bg-neutral-950/5 active:-outline-offset-2 dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300 dark:focus-visible:text-neutral-300 dark:focus-visible:outline-white dark:active:bg-white/5"
-            title="Use Camera"
-            aria-label="Use Camera"
-          >
-            <Camera />
-          </button>
+            <button
+              className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none focus-visible:text-neutral-600 focus-visible:outline focus-visible:outline-offset-0 focus-visible:outline-black active:bg-neutral-950/5 active:-outline-offset-2 dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300 dark:focus-visible:text-neutral-300 dark:focus-visible:outline-white dark:active:bg-white/5"
+              title="Use Camera"
+              aria-label="Use Camera"
+            >
+              <Camera />
+            </button>
 
-          <button
-            className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none focus-visible:text-neutral-600 focus-visible:outline focus-visible:outline-offset-0 focus-visible:outline-black active:bg-neutral-950/5 active:-outline-offset-2 dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300 dark:focus-visible:text-neutral-300 dark:focus-visible:outline-white dark:active:bg-white/5"
-            title="Upload Image"
-            aria-label="Upload Image"
-          >
-            <Image />
-          </button>
+            <button
+              className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none focus-visible:text-neutral-600 focus-visible:outline focus-visible:outline-offset-0 focus-visible:outline-black active:bg-neutral-950/5 active:-outline-offset-2 dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300 dark:focus-visible:text-neutral-300 dark:focus-visible:outline-white dark:active:bg-white/5"
+              title="Upload Image"
+              aria-label="Upload Image"
+            >
+              <Image />
+            </button>
 
-          <button
-            className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none focus-visible:text-neutral-600 focus-visible:outline focus-visible:outline-offset-0 focus-visible:outline-black active:bg-neutral-950/5 active:-outline-offset-2 dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300 dark:focus-visible:text-neutral-300 dark:focus-visible:outline-white dark:active:bg-white/5"
-            title="Use Voice"
-            aria-label="Use Voice"
-          >
-            <Voice />
-          </button> */}
+            <button
+              className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none focus-visible:text-neutral-600 focus-visible:outline focus-visible:outline-offset-0 focus-visible:outline-black active:bg-neutral-950/5 active:-outline-offset-2 dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300 dark:focus-visible:text-neutral-300 dark:focus-visible:outline-white dark:active:bg-white/5"
+              title="Use Voice"
+              aria-label="Use Voice"
+            >
+              <Voice />
+            </button>
           </div>
 
-          {/* <ToggleButtonGroup
-            activeButtons={activeButtons}
-            setActiveButtons={setActiveButtons}
-          />*/}
           <button
             type="button"
             onClick={handleGenerate}
