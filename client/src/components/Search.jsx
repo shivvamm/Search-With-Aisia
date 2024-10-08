@@ -58,7 +58,7 @@ export default function Search({ addMessage, uuid_session_id }) {
     });
     console.log(body);
     const response = await fetch(
-      `http://localhost:8000/searchnew?search_type=${searchType}`,
+      `https://search-with-alisia-1.onrender.com/searchnew?search_type=${searchType}`,
       {
         method: "POST",
         headers: {
