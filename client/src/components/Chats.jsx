@@ -4,7 +4,7 @@ import Bot from "./icons/Bot";
 import Speak from "./icons/Speak";
 import TypingEffect from "./effects/TypingEffect";
 
-export default function Chats({ messages,setIsLoading }) {
+export default function Chats({ messages }) {
   const [copiedToClipboard, setCopiedToClipboard] = useState(null);
   const targetTextRef = useRef(null);
   const [loadingImages, setLoadingImages] = useState(true);
@@ -149,13 +149,6 @@ export default function Chats({ messages,setIsLoading }) {
           )}
         </div>
       ))}
-      {isLoading && (
-        <div className="w-full flex justify-start mb-4 animate-pulse">
-          <div className="w-full max-w-xs lg:max-w-lg border-neutral-300 bg-gray-200 p-6 text-left rounded-full">
-            <p className="text-justify text-sm text-neutral-600">Typing...</p>
-          </div>
-        </div>
-      )}
       <div className="" style={{ marginTop: "180px" }}></div>
     </div>
   );
