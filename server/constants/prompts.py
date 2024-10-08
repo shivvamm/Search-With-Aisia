@@ -69,6 +69,31 @@ Answer the user query.\n{format_instructions}\
 <|eot_id|>"""
 
 
+# to_search_or_not_gemini = """**Current Date**: {Date}\n
+# You are an Information Specialist. Determine if a search is needed for the following question:
+
+# **User Question**: {Query}\n
+
+# **Instructions**:
+# - Respond with `True` if the question involves:
+#   - Recent events
+#   - Real-time data
+#   - Details that may have changed
+
+# - Respond with `False` for:
+#   - Simple greetings (e.g., "Hi")
+#   - Historical facts
+#   - General knowledge"""
+
+to_search_or_not_gemini="""
+**Current Date**: {Date}\n
+respond with ture or false on the below asked question by someone 
+Question : {Query}
+Weather to search the internet to answer the question or not?
+
+"""
+
+
 to_get_search_types = """<|start_header_id|>User<|end_header_id|>
 
 **Current Date**: {Date}\n

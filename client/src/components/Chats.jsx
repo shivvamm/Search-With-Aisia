@@ -185,19 +185,38 @@ const Tabs = ({ resources }) => {
 
 const ResourceDisplay = ({ resource, activeTab }) => {
   if (activeTab === "Images" && resource.length > 0) {
+    console.log(resource["Images"]);
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-2">
+      <div className="sm:grid-cols-2 grid-cols-1 grid md:grid-cols-3 lg:grid-cols-4 w-full gap-6 border-neutral-300 bg-neutral-50 p-6 dark:border-neutral-700 dark:bg-neutral-900 rounded-md border">
         {resource.map((image, index) => (
-          <div
-            key={index}
-            className="overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200"
-          >
-            <a href={image.murl} target="_blank" rel="noopener noreferrer">
-              <img
-                className="w-full h-48 object-cover"
-                src={image.murl}
-                alt={image.image_name}
-              />
+          <div key={index} className="group relative">
+            <img
+              className="w-full h-48 object-cover rounded-md"
+              src={image.murl}
+              alt={image.image_name}
+            />
+            <a
+              role="button"
+              href={image.data}
+              download={image.image_name}
+              class="absolute right-2.5 top-2.5 rounded-md z-10 bg-neutral-50/75 p-1 text-neutral-600 dark:bg-neutral-900/75 dark:text-neutral-300"
+            >
+              <span class="sr-only">download variation 1</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                aria-hidden="true"
+                class="size-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+                />
+              </svg>
             </a>
           </div>
         ))}

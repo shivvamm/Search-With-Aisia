@@ -6,6 +6,7 @@ from typing import Optional,List
 from utils.search import search_handler
 from utils.scrape import  BingSearch,is_valid_url
 from utils.scrapegoogle import GoogleScrape
+from utils.gemini import get_descision_gemini
 from utils.chat import get_descision,chat_handler,get_search_type
 router = APIRouter()
 
@@ -92,6 +93,7 @@ async def search_new(query: Query, search_type: str):
     try:
         resources = {}
         results=[]
+        image_data = []
         response=""
         search_type = await get_search_type(query.query)
         print(search_type)
@@ -125,7 +127,7 @@ async def search_new(query: Query, search_type: str):
             for i in requested_search_type:
                 if i == "Images":
                     bing_search = BingSearch(max_pages=2)  
-                    image_results = await bing_search.search_images(query=query.query, num_images=15)
+                    image_results,image_data = await bing_search.search_images(query=query.query, num_images=15)
                     valid_images = []
                     for image in image_results:
                         if is_valid_url(image['murl']):
@@ -135,29 +137,33 @@ async def search_new(query: Query, search_type: str):
                     resources["Images"] = valid_images
                 elif i == "Videos":
                     google_search = GoogleScrape()
-                    resources["Videos"] = await google_search.scrape_videos(query.query, num_results=5)  # Await here
+                    resources["Videos"] = await google_search.scrape_videos(query.query, num_results=5)  
                 elif i == "News":
                     bing_search = BingSearch(max_pages=2)  
-                    resources["News"] = await bing_search.search_news(query=query.query, num_news=5)  # Await here
+                    resources["News"] = await bing_search.search_news(query=query.query, num_news=5)  
                 elif i == "Shopping":
                     google_search = GoogleScrape()
-                    resources["Shopping"] = await google_search.scrape_shopping(query.query, num_results=5)  # Await here
+                    resources["Shopping"] = await google_search.scrape_shopping(query.query, num_results=5)  
                 elif i == "Books":
                     google_search = GoogleScrape()
-                    resources["Books"] = await google_search.scrape_books(query.query, num_results=5)  # Await here
+                    resources["Books"] = await google_search.scrape_books(query.query, num_results=5)  
                 elif i == "Flights":
                     google_search = GoogleScrape()
-                    resources["Flights"] = await google_search.scrape_flights(query.query, num_results=5)  # Await here
+                    resources["Flights"] = await google_search.scrape_flights(query.query, num_results=5)  
                 elif i == "Finance":
                     google_search = GoogleScrape()
-                    resources["Finance"] = await google_search.scrape_finance(query.query, num_results=5)  # Await here
+                    resources["Finance"] = await google_search.scrape_finance(query.query, num_results=5) 
 
 
             # resources = await asyncio.gather(*(search_handler(query.query, i.lower()) for i in requested_search_type))
             #     # for i in query.search_type_resources:
             #         # resources.append(search_handler(query.query, i.lower()))
-
             response = await chat_handler(query.query,query.session_id,results,resources)
+            if "Images" in resources:
+                for key,value in image_data.items():
+                            for i in  resources["Images"]:
+                                if i['murl'] == key:
+                                    i['data'] = value
             return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={

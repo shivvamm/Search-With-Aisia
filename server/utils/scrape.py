@@ -3,6 +3,7 @@ import urllib.request
 import json
 import requests
 import urllib.parse
+import base64
 
 class BingSearch:
     def __init__(self, default_query="cats", default_num_results=5, max_pages=2):
@@ -10,6 +11,7 @@ class BingSearch:
         self.default_num_results = default_num_results
         self.max_pages = max_pages
         self.image_results = []
+        self.image_data = {}
         self.video_results = []
         self.news_results = []
         self.header = {
@@ -17,10 +19,19 @@ class BingSearch:
                           "Chrome/43.0.2357.134 Safari/537.36"
         }
 
-    def get_soup(self, url):
+    async def get_soup(self, url):
         return BeautifulSoup(urllib.request.urlopen(
             urllib.request.Request(url, headers=self.header)),
             'html.parser')
+    
+    async def encode_image_to_base64(self, img_url):
+        try:
+            img_response = requests.get(img_url)
+            img_base64 = base64.b64encode(img_response.content).decode('utf-8')
+            return f'data:image/jpeg;base64,{img_base64}'
+        except Exception as e:
+            print(f"Error encoding image {img_url}: {e}")
+            return None
 
     async def search_images(self, query=None, num_images=None):
         query = query or self.default_query
@@ -30,54 +41,57 @@ class BingSearch:
         base_url = f"http://www.bing.com/images/search?q={'+'.join(query.split())}&FORM=HDRSC2"
 
         current_page = 0
-        results_per_page = 35  # Bing typically returns 35 images per page
+        results_per_page = 35  
 
         while len(self.image_results) < num_images and current_page < self.max_pages:
             url = f"{base_url}&first={current_page * results_per_page}"
-            soup = self.get_soup(url)
+            soup = await self.get_soup(url)
 
             raw_results = soup.find_all("a", {"class": "iusc"})
 
             if not raw_results:
-                break  # Exit if there are no more results
+                break 
 
             for result in raw_results:
                 if len(self.image_results) >= num_images:
                     break
 
                 m = json.loads(result["m"])
-                murl, turl = m["murl"], m["turl"]  # Mobile image, desktop image
+                murl, turl = m.get("murl"), m.get("turl")
+                download_url = murl 
+
+                if murl.startswith("http"):
+                    if not any(murl.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif', '.bmp']):
+                        continue  
 
                 # Extracting metadata
                 metadata = {
                     "image_name": urllib.parse.urlsplit(murl).path.split("/")[-1],
                     "murl": murl,
-                    "turl": turl,
-                    "width": m.get("width", "N/A"),
-                    "height": m.get("height", "N/A"),
-                    "size": m.get("size", "N/A")  # Size might not be available
+                    "turl": turl 
                 }
+                self.image_data[murl]= await self.encode_image_to_base64(murl) 
                 self.image_results.append(metadata)
 
-            current_page += 1  # Go to the next page
+            current_page += 1 
 
-        return self.image_results
+        return self.image_results,self.image_data
 
     async def search_videos(self, query=None, num_videos=None):
         query = query or self.default_query
         num_videos = num_videos or self.default_num_results
         
-        self.video_results = []  # Reset results for new search
+        self.video_results = []  
         base_url = f"http://www.bing.com/videos/search?q={'+'.join(query.split())}"
 
         current_page = 0
-        results_per_page = 35  # Bing typically returns 35 videos per page
+        results_per_page = 35  
 
         while len(self.video_results) < num_videos and current_page < self.max_pages:
             url = f"{base_url}&first={current_page * results_per_page}"
-            soup = self.get_soup(url)
+            soup =await self.get_soup(url)
 
-            # Find video links with a specific selector
+           
             raw_results = soup.find_all("a", {"class": "video"})
 
             for result in raw_results:
@@ -88,7 +102,7 @@ class BingSearch:
                     video_url = result["href"]
                     title = result.get_text(strip=True) or "No title"
 
-                    # Ensure the video_url is complete
+                   
                     if not video_url.startswith('http'):
                         video_url = f"http://www.bing.com{video_url}"
 
@@ -97,7 +111,7 @@ class BingSearch:
                         "title": title
                     })
 
-            current_page += 1  # Go to the next page
+            current_page += 1  
 
         return self.video_results
 
@@ -105,16 +119,16 @@ class BingSearch:
         query = query or self.default_query
         num_news = num_news or self.default_num_results
 
-        self.news_results = []  # Reset results for new search
+        self.news_results = []  
         base_url = f"https://www.bing.com/news/search?q={'+'.join(query.split())}"
 
         current_page = 0
 
         while len(self.news_results) < num_news and current_page < self.max_pages:
-            url = f"{base_url}&first={current_page * 10}"  # 10 news articles per page
-            soup = self.get_soup(url)
+            url = f"{base_url}&first={current_page * 10}"  
+            soup = await self.get_soup(url)
 
-            # Find news articles
+           
             raw_results = soup.find_all("a", {"class": "title"})
 
             for result in raw_results:

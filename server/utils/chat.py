@@ -6,7 +6,7 @@ from constants.prompts import user_message_without_resources, user_message_with_
 from groq import AsyncGroq
 from typing import List
 from config.llm import llm,chat
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from utils.search import format_search_results
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.output_parsers import StrOutputParser,JsonOutputParser
