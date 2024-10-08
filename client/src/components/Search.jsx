@@ -4,7 +4,7 @@ import Voice from "./icons/Voice";
 import Image from "./icons/Image";
 import Camera from "./icons/Camera";
 
-export default function Search({ addMessage, uuid_session_id }) {
+export default function Search({ addMessage, uuid_session_id, setIsLoading }) {
   const [promptText, setPromptText] = useState("");
   const [activeButtons, setActiveButtons] = useState([]);
   const [lineCount, setLineCount] = useState(1);
@@ -40,6 +40,7 @@ export default function Search({ addMessage, uuid_session_id }) {
       return;
     }
     addMessage("user", promptText);
+    setIsLoading(true);
     if (promptTextInputRef.current) {
       promptTextInputRef.current.innerText = "";
     }
@@ -73,12 +74,14 @@ export default function Search({ addMessage, uuid_session_id }) {
     );
 
     if (!response.ok) {
+      setIsLoading(false);
       throw new Error("Network response was not ok");
     }
 
     const data = await response.json();
     console.log(data);
     addMessage("ai", data);
+    setIsLoading(false);
   };
 
   const handleKeyDown = (e) => {

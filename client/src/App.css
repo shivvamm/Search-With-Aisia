@@ -4,3 +4,21 @@ body {
   padding: 0;
   height: 100%;
 }
+
+/* Example CSS for pulse animation */
+.animate-pulse {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+

@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 function App() {
   const [messages, setMessages] = useState([]);
   const [uuid_session_id, setUuidSessionId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const initialSessionId = uuidv4();
@@ -24,9 +25,13 @@ function App() {
 
   return (
     <div className="flex flex-col  items-center overflow-hidden">
-      <Chats messages={messages} />
+      <Chats messages={messages} isLoading={isLoading} />
       <div className="w-full p-4 fixed bottom-0">
-        <Search addMessage={addMessage} uuid_session_id={uuid_session_id} />
+        <Search
+          addMessage={addMessage}
+          uuid_session_id={uuid_session_id}
+          setIsLoading={setIsLoading}
+        />
       </div>
     </div>
   );
