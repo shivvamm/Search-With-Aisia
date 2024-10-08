@@ -1,5 +1,6 @@
 import os
 import re
+import logging
 from fastapi import HTTPException , status
 from datetime import datetime
 from constants.prompts import user_message_without_resources, user_message_with_resources
@@ -17,6 +18,11 @@ from constants.prompts import to_search_or_not,to_get_search_types
 
 load_dotenv()
 parser = JsonOutputParser()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 
 class descision(BaseModel):
     to_search: bool = Field(description="Ture if there is a need to search the web for the query and if not need to search the web then False")
@@ -54,14 +60,20 @@ client = AsyncGroq(
 )
 
 
-async def get_descision(query: str):
+async def get_decision(query: str):
+    if not isinstance(query, str) or not query.strip():
+        raise ValueError("Query must be a non-empty string.")
     pattern = r'"to_search":\s*(true|false)'
     current_date = datetime.now()
     formatted_date = current_date.strftime("%d %B %Y")
     parser = JsonOutputParser(pydantic_object=descision)
     prompt = PromptTemplate(template=to_search_or_not,input_variables=["Query","Date"],partial_variables={"format_instructions": parser.get_format_instructions()})
     chain = prompt | chat | StrOutputParser()
-    output = chain.invoke({"Query":query,"Date":formatted_date})
+    try:
+        output = chain.invoke({"Query": query, "Date": formatted_date})
+    except Exception as e:
+        logger.error(f"Error invoking decision chain: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error processing decision.")
     match = re.search(pattern, output, re.IGNORECASE)
     if match:
         value = match.group(1)
@@ -79,12 +91,18 @@ async def get_descision(query: str):
 
 
 async def get_search_type(query: str):
+    if not isinstance(query, str) or not query.strip():
+        raise ValueError("Query must be a non-empty string.")
     current_date = datetime.now()
     formatted_date = current_date.strftime("%d %B %Y")
     parser = JsonOutputParser(pydantic_object=SearchDecision)
     prompt = PromptTemplate(template=to_get_search_types,input_variables=["Query","Date"],partial_variables={"format_instructions": parser.get_format_instructions()})
     chain = prompt | chat | parser
-    output = chain.invoke({"Query":query,"Date":formatted_date})
+    try:
+        output = chain.invoke({"Query": query, "Date": formatted_date})
+    except Exception as e:
+        logger.error(f"Error invoking search type chain: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error processing search type.")
     print(type(output))
     return output
 
@@ -119,8 +137,9 @@ async def chat_handler(query,session_id,results,resources):
         return response_data
 
     except Exception as e:
-        print(e)
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred. Please try again later.")
+        logger.error(f"Error in chat handler: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred in chat handler.")
+
 
 
 
@@ -145,5 +164,9 @@ async def transcribe_audio(file_content: bytes, file_name: str = "audio.m4a") ->
         
         return transcription.text
     
+    except RuntimeError as e:
+        logger.error(f"Transcription error: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error during audio transcription.")
     except Exception as e:
-        raise RuntimeError(f"Error during transcription: {str(e)}")
+        logger.error(f"Unexpected error during transcription: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred during transcription.")

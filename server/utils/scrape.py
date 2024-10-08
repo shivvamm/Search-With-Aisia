@@ -64,7 +64,7 @@ class BingSearch:
                     if not any(murl.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif', '.bmp']):
                         continue  
 
-                # Extracting metadata
+               
                 metadata = {
                     "image_name": urllib.parse.urlsplit(murl).path.split("/")[-1],
                     "murl": murl,
@@ -161,7 +161,7 @@ def is_valid_url(url):
     except requests.RequestException:
         return False
 
-
+###For Testing ###
 # if __name__ == "__main__":
 #     bing_search = BingSearch(max_pages=2)  # Limit to 2 pages
 

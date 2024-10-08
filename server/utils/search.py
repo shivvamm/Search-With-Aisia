@@ -35,10 +35,6 @@ def format_search_results(results: List[Dict[str, str]]) -> str:
 
 async def search_handler(query: str, search_type: str):
     addgs = AsyncDDGS()
-    # proxy = FreeProxy(timeout=90, rand=True).get()
-    # if proxy:
-    #     print(f"Using proxy: {proxy}")
-    #     addgs = AsyncDDGS(proxy=proxy)
     if search_type == "text":
         results = list(await addgs.atext(query,max_results=10))
         return results
