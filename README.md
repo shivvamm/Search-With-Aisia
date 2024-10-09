@@ -1,6 +1,6 @@
 # Alisia - Your Conversational AI Search Partner
 
-<img src="client/public/alisia.jpeg" alt="Alisia Logo" width="800" height="500">
+![Alisia Logo](client/public/alisia.jpeg)
 
 ## Overview
 
