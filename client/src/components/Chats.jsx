@@ -248,19 +248,23 @@ const ResourceDisplay = ({ resource, activeTab }) => {
   }
   if (activeTab === "Videos" && resource.length > 0) {
     return (
-      <div className="mt-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
         {resource.map((video, index) => (
-          <div
-            key={index}
-            className="flex justify-between p-2 border-b border-gray-200"
-          >
+          <div key={index} className="relative overflow-hidden rounded-md shadow-md">
+            <iframe
+              className="w-full h-48"
+              src={video.url}
+              title={video.title}
+              frameBorder="0"
+              allowFullScreen
+            />
             <a
               href={video.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="absolute bottom-2 right-2 bg-white rounded-md p-1 text-blue-600 hover:underline"
             >
-              {video.title}
+              Watch
             </a>
           </div>
         ))}

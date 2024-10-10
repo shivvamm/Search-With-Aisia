@@ -67,22 +67,34 @@ class GoogleScrape:
         soup = BeautifulSoup(response.text, 'html.parser')
         video_results = []
 
-        
         search_results = soup.find_all('a', href=True)
 
         for link in search_results:
-           
-            if 'video' in link['href'] or 'youtube.com' in link['href'] or 'vimeo.com' in link['href']:
+            href = link['href']
+
+            if 'youtube.com/watch' in href or 'vimeo.com' in href:
                 title = link.get_text(strip=True) or "No title"
+
+                
+                if 'youtube.com/watch?v=' in href:
+                    video_id = href.split('v=')[-1]
+                    embed_url = f"https://www.youtube.com/embed/{video_id}"
+                elif 'vimeo.com/' in href:
+                    video_id = href.split('/')[-1]
+                    embed_url = f"https://player.vimeo.com/video/{video_id}"
+                else:
+                    continue
+                
                 video_results.append({
                     "title": title,
-                    "url": link['href']
+                    "url": embed_url
                 })
 
             if len(video_results) >= num_results:
                 break
 
         return video_results
+
 
 
 # def main():

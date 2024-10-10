@@ -104,7 +104,7 @@ export default function Search({ addMessage, uuid_session_id }) {
   return (
     <div className="flex w-full flex-col gap-2">
       {items.length > 0 ? (
-        <div className="bg-neutral-50 border-neutral-300 py-4 dark:border-neutral-700 dark:bg-neutral-900 rounded-md border">
+        <div className="bg-neutral-50  py-4  dark:bg-neutral-900 rounded-lg ">
           <ul className="text-neutral-600 dark:text-neutral-300 text-sm">
             {items.map((item, index) => (
               <li
@@ -119,7 +119,7 @@ export default function Search({ addMessage, uuid_session_id }) {
       ) : (
         <></>
       )}
-      <div className="flex w-full flex-col overflow-hidden border-neutral-300 bg-neutral-50 text-neutral-600 has-[p:focus]:outline has-[p:focus]:outline-2 has-[p:focus]:outline-offset-2 has-[p:focus]:outline-black dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:has-[p:focus]:outline-white rounded-md border">
+      <div className="flex w-full shadow-2xl flex-col overflow-hidden  bg-neutral-50 text-neutral-600  dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:has-[p:focus]:outline-white rounded-lg">
         <div className="p-2">
           <p
             id="promptLabel"

@@ -137,7 +137,7 @@ async def search_new(query: Query, search_type: str):
                     resources["Images"] = valid_images
                 elif i == "Videos":
                     google_search = GoogleScrape()
-                    resources["Videos"] = await google_search.scrape_videos(query.query, num_results=5)  
+                    resources["Videos"] = await google_search.scrape_videos(query.query, num_results=6)  
                 elif i == "News":
                     bing_search = BingSearch(max_pages=2)  
                     resources["News"] = await bing_search.search_news(query=query.query, num_news=5)  
