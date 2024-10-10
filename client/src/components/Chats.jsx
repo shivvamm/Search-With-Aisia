@@ -250,7 +250,10 @@ const ResourceDisplay = ({ resource, activeTab }) => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
         {resource.map((video, index) => (
-          <div key={index} className="relative overflow-hidden rounded-md shadow-md">
+          <div
+            key={index}
+            className="relative overflow-hidden rounded-md shadow-md"
+          >
             <iframe
               className="w-full h-48"
               src={video.url}
@@ -258,14 +261,14 @@ const ResourceDisplay = ({ resource, activeTab }) => {
               frameBorder="0"
               allowFullScreen
             />
-            <a
+            {/* <a
               href={video.url}
               target="_blank"
               rel="noopener noreferrer"
               className="absolute bottom-2 right-2 bg-white rounded-md p-1 text-blue-600 hover:underline"
             >
               Watch
-            </a>
+            </a> */}
           </div>
         ))}
       </div>
