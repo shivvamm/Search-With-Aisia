@@ -4,12 +4,15 @@ import Markdown from "react-markdown";
 const TypingEffect = ({ text, speed }) => {
   const [displayedText, setDisplayedText] = useState("");
   const textRef = useRef(null);
+
   useEffect(() => {
     let index = 0;
+
     const timer = setInterval(() => {
-      setDisplayedText((prev) => prev + text[index]);
-      index += 1;
-      if (index === text.length) {
+      if (index < text.length) {
+        setDisplayedText((prev) => prev + text[index]);
+        index += 1;
+      } else {
         clearInterval(timer);
       }
     }, speed);
