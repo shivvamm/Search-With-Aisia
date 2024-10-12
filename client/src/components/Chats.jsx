@@ -51,20 +51,22 @@ export default function Chats({ messages }) {
             </div>
           ) : (
             <div className="w-full flex justify-start mb-4 text-sm">
-              <div className="w-full p-6 text-left rounded-md">
+              <span className="flex  mt-3 w-10 h-10 items-center justify-center rounded-full">
+                <img src="image.webp" />
+              </span>
+              <div className="w-full py-6 px-2 text-left rounded-md">
                 <div className="flex items-center gap-2 text-neutral-900 dark:text-white">
-                  <span className="flex  mt-3 w-10 h-10 items-center justify-center rounded-full">
-                    <img src="image.webp" />
-                  </span>
-                  {msg.content?.data?.refined_results && (
-                    <TypingEffect
-                      text={msg.content.data.refined_results}
-                      speed={5}
-                    />
-                  )}
+                  <div className="flex-grow">
+                    {msg.content?.data?.refined_results && (
+                      <TypingEffect
+                        text={msg.content.data.refined_results}
+                        speed={5}
+                      />
+                    )}
+                  </div>
                 </div>
 
-                <div className="mt-2 flex items-center gap-2 ml-11">
+                <div className="mt-2 flex items-center gap-2">
                   <button
                     className="rounded-full w-fit p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300"
                     title="Copy"
