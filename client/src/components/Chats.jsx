@@ -38,35 +38,33 @@ export default function Chats({ messages }) {
   };
 
   return (
-    <div className="flex-grow flex-shrink-0 lg:w-[60%] h-full  w-full p-4">
+    <div className="flex-grow flex-shrink-0 lg:w-[60%] h-full  w-full p-4 ">
       {messages.map((msg, index) => (
         <div key={index}>
           {msg.type === "user" ? (
             <div className="w-full flex justify-end mb-4">
-              <div className="w-full max-w-xs lg:max-w-lg border-neutral-300 bg-neutral-50 p-6 text-left dark:border-neutral-700 dark:bg-neutral-900 rounded-full">
-                <p className="text-justify text-sm text-neutral-600 dark:text-neutral-300">
+              <div className="max-w-xs lg:max-w-lg border-neutral-300 bg-[#f4f4f4] px-5 py-3 text-left dark:border-neutral-700 dark:bg-[#2F2F2F] rounded-3xl min-w-fit">
+                <p className="text-justify text-sm text-[#0D0D0D] dark:text-white">
                   {msg.content}
                 </p>
               </div>
             </div>
           ) : (
-            <div className="w-full flex justify-start mb-4">
-              <div className="w-full p-6 text-left rounded-md  dark:bg-neutral-900">
-                <div className="flex items-center gap-2 text-neutral-900 dark:text-white pb-2">
-                  <span className="flex w-8 h-8 items-center justify-center rounded-full bg-black text-neutral-100 dark:bg-white dark:text-black">
-                    <Bot />
+            <div className="w-full flex justify-start mb-4 text-sm">
+              <div className="w-full p-6 text-left rounded-md">
+                <div className="flex items-center gap-2 text-neutral-900 dark:text-white">
+                  <span className="flex  mt-3 w-10 h-10 items-center justify-center rounded-full">
+                    <img src="image.webp" />
                   </span>
-                  <span className="text-sm font-bold">Alisia AI</span>
+                  {msg.content?.data?.refined_results && (
+                    <TypingEffect
+                      text={msg.content.data.refined_results}
+                      speed={5}
+                    />
+                  )}
                 </div>
 
-                {msg.content?.data?.refined_results && (
-                  <TypingEffect
-                    text={msg.content.data.refined_results}
-                    speed={5}
-                  />
-                )}
-
-                <div className="mt-2 flex items-center gap-2">
+                <div className="mt-2 flex items-center gap-2 ml-11">
                   <button
                     className="rounded-full w-fit p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300"
                     title="Copy"
@@ -160,7 +158,7 @@ const Tabs = ({ resources }) => {
   return (
     <div>
       <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
-        <ul className="flex flex-wrap -mb-px">
+        <ul className="flex flex-wrap mb-px">
           {Object.keys(resources).map((key) => (
             <li key={key} className="me-2">
               <button
@@ -187,7 +185,7 @@ const ResourceDisplay = ({ resource, activeTab }) => {
   if (activeTab === "Images" && resource.length > 0) {
     console.log(resource["Images"]);
     return (
-      <div className="sm:grid-cols-2 grid-cols-1 grid md:grid-cols-3 lg:grid-cols-4 w-full gap-6 border-neutral-300 bg-neutral-50 p-6 dark:border-neutral-700 dark:bg-neutral-900 rounded-md border">
+      <div className="sm:grid-cols-2 grid-cols-1 grid md:grid-cols-3 lg:grid-cols-4 w-full gap-6 border-neutral-300 bg-neutral-50 p-6 dark:border-neutral-700 dark:bg-neutral-900 mt-2 rounded-md border">
         {resource.map((image, index) => (
           <div key={index} className="group relative">
             <img

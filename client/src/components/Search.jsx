@@ -119,11 +119,11 @@ export default function Search({ addMessage, uuid_session_id }) {
       ) : (
         <></>
       )}
-      <div className="flex w-full shadow-2xl flex-col overflow-hidden  bg-neutral-50 text-neutral-600  dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:has-[p:focus]:outline-white rounded-lg">
+      <div className="flex w-full flex-col z-1000 overflow-hidden  bg-[#f4f4f4] text-[#0D0D0D]  dark:border-neutral-700 dark:dark:bg-[#2F2F2F]  dark:text-white dark:has-[p:focus]:outline-white rounded-lg">
         <div className="p-2">
           <p
             id="promptLabel"
-            className="pb-1 pl-2 text-sm font-bold text-neutral-600 opacity-60 dark:text-neutral-300"
+            className="pb-1 pl-2 text-sm font-bold opacity-60 dark:text-neutral-300"
           >
             Message
           </p>

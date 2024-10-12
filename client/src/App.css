@@ -3,9 +3,14 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
+  background-color: white; /* Default background for light mode */
 }
 
-/* Example CSS for pulse animation */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #212121; /* Background for dark mode */
+  }
+}
 .animate-pulse {
   animation: pulse 1.5s infinite;
 }
@@ -21,4 +26,3 @@ body {
     opacity: 1;
   }
 }
-

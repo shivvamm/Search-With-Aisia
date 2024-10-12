@@ -23,7 +23,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col  items-center overflow-hidden">
+    <div className="flex flex-col  items-center overflow-hidden dark:bg-[#212121]">
       <Chats messages={messages} />
       <div className="w-full p-4 fixed bottom-0">
         <Search addMessage={addMessage} uuid_session_id={uuid_session_id} />
