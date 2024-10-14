@@ -4,7 +4,7 @@ import Bot from "./icons/Bot";
 import Speak from "./icons/Speak";
 import TypingEffect from "./effects/TypingEffect";
 
-export default function Chats({ messages }) {
+export default function Chats({ messages, isLoading }) {
   const [copiedToClipboard, setCopiedToClipboard] = useState(null);
   const targetTextRef = useRef(null);
   const [loadingImages, setLoadingImages] = useState(true);
@@ -54,6 +54,13 @@ export default function Chats({ messages }) {
               <span className="flex  mt-3 w-10 h-10 items-center justify-center rounded-full">
                 <img src="image.webp" />
               </span>
+              {/* {isLoading ? (
+                <div className="flex justify-center items-center mb-4 text-white">
+                  <div className="loader">Loading...</div>
+                </div>
+              ) : (
+                <p></p>
+              )} */}
               <div className="w-full py-6 px-2 text-left rounded-md">
                 <div className="flex items-center gap-2 text-neutral-900 dark:text-white">
                   <div className="flex-grow">

@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 
 function App() {
   const [messages, setMessages] = useState([]);
+  const [isLoading,setIsLoading] = useState(false);
   const [uuid_session_id, setUuidSessionId] = useState("");
 
   useEffect(() => {
@@ -26,7 +27,7 @@ function App() {
     <div className="flex flex-col  items-center overflow-hidden dark:bg-[#212121]">
       <Chats messages={messages} />
       <div className="w-full p-4 fixed bottom-0">
-        <Search addMessage={addMessage} uuid_session_id={uuid_session_id} />
+        <Search addMessage={addMessage} setIsLoading={setIsLoading} uuid_session_id={uuid_session_id} />
       </div>
     </div>
   );

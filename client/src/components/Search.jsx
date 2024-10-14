@@ -4,7 +4,7 @@ import Voice from "./icons/Voice";
 import Image from "./icons/Image";
 import Camera from "./icons/Camera";
 
-export default function Search({ addMessage, uuid_session_id }) {
+export default function Search({ addMessage, uuid_session_id, setIsLoading }) {
   const [promptText, setPromptText] = useState("");
   const [activeButtons, setActiveButtons] = useState([]);
   const [lineCount, setLineCount] = useState(1);
@@ -44,6 +44,7 @@ export default function Search({ addMessage, uuid_session_id }) {
       promptTextInputRef.current.innerText = "";
     }
     setPromptText("");
+    setIsLoading(true);
     const backendUrl = import.meta.env.VITE_LOCAL_BACKEND_URL;
     console.log(backendUrl);
     console.log(uuid_session_id);
@@ -58,7 +59,7 @@ export default function Search({ addMessage, uuid_session_id }) {
     });
     console.log(body);
     const response = await fetch(
-      `https://search-with-alisia-1.onrender.com/searchnew?search_type=${searchType}`,
+      `http://127.0.0.1:8000/searchnew?search_type=${searchType}`,
       {
         method: "POST",
         headers: {
@@ -78,6 +79,7 @@ export default function Search({ addMessage, uuid_session_id }) {
 
     const data = await response.json();
     console.log(data);
+    setIsLoading(false);
     addMessage("ai", data);
   };
 

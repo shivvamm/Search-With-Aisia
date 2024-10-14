@@ -7,7 +7,7 @@ from utils.search import search_handler
 from utils.scrape import  BingSearch,is_valid_url
 from utils.scrapegoogle import GoogleScrape
 from utils.gemini import get_descision_gemini
-from utils.chat import get_decision,chat_handler,get_search_type
+from utils.chat import get_decision,chat_handler,get_search_type,get_search_query
 router = APIRouter()
 
 
@@ -96,12 +96,15 @@ async def search_new(query: Query, search_type: str):
         image_data = []
         response=""
         search_type = await get_search_type(query.query)
+        search_query  = await get_search_query(query.query,"".join(search_type))
+        new_query = search_query["query"]
+        print(new_query)
         print(search_type)
         if "Text" in search_type or len(search_type["search_types"]) == 0:
             to_sreach = await get_decision(query.query)
             
             if to_sreach:
-                results = await search_handler(query.query, search_type)
+                results = await search_handler(search_query["query"], search_type)
                 response = await chat_handler(query.query,query.session_id,results,resources="")
             else:
                 response = await chat_handler(query.query,query.session_id,results="",resources="")
@@ -127,7 +130,7 @@ async def search_new(query: Query, search_type: str):
             for i in requested_search_type:
                 if i == "Images":
                     bing_search = BingSearch(max_pages=2)  
-                    image_results,image_data = await bing_search.search_images(query=query.query, num_images=15)
+                    image_results,image_data = await bing_search.search_images(query=new_query, num_images=15)
                     valid_images = []
                     for image in image_results:
                         if is_valid_url(image['murl']):
@@ -137,22 +140,22 @@ async def search_new(query: Query, search_type: str):
                     resources["Images"] = valid_images
                 elif i == "Videos":
                     google_search = GoogleScrape()
-                    resources["Videos"] = await google_search.scrape_videos(query.query, num_results=6)  
+                    resources["Videos"] = await google_search.scrape_videos(new_query, num_results=6)  
                 elif i == "News":
                     bing_search = BingSearch(max_pages=2)  
-                    resources["News"] = await bing_search.search_news(query=query.query, num_news=5)  
+                    resources["News"] = await bing_search.search_news(query=new_query, num_news=5)  
                 elif i == "Shopping":
                     google_search = GoogleScrape()
-                    resources["Shopping"] = await google_search.scrape_shopping(query.query, num_results=5)  
+                    resources["Shopping"] = await google_search.scrape_shopping(new_query, num_results=5)  
                 elif i == "Books":
                     google_search = GoogleScrape()
-                    resources["Books"] = await google_search.scrape_books(query.query, num_results=5)  
+                    resources["Books"] = await google_search.scrape_books(new_query, num_results=5)  
                 elif i == "Flights":
                     google_search = GoogleScrape()
-                    resources["Flights"] = await google_search.scrape_flights(query.query, num_results=5)  
+                    resources["Flights"] = await google_search.scrape_flights(new_query, num_results=5)  
                 elif i == "Finance":
                     google_search = GoogleScrape()
-                    resources["Finance"] = await google_search.scrape_finance(query.query, num_results=5) 
+                    resources["Finance"] = await google_search.scrape_finance(new_query, num_results=5) 
 
 
             response = await chat_handler(query.query,query.session_id,results,resources)

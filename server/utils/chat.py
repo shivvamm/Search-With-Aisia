@@ -14,7 +14,7 @@ from langchain_core.output_parsers import StrOutputParser,JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder,PromptTemplate
 from langchain_community.chat_message_histories import RedisChatMessageHistory
 from dotenv import load_dotenv
-from constants.prompts import to_search_or_not,to_get_search_types
+from constants.prompts import to_search_or_not,to_get_search_types,to_get_search_query
 
 load_dotenv()
 parser = JsonOutputParser()
@@ -31,6 +31,11 @@ class SearchDecision(BaseModel):
     search_types: List[str] = Field(
         default_factory=list,
         description="A list of types of searches needed (e.g., images, news, videos, maps, shopping, books, flights, finance)."
+    )
+
+class QueryGenerator(BaseModel):
+    query: str = Field(
+        description="Refined query based on the user question and search types for best results"
     )
 
 
@@ -100,6 +105,23 @@ async def get_search_type(query: str):
     chain = prompt | chat | parser
     try:
         output = chain.invoke({"Query": query, "Date": formatted_date})
+    except Exception as e:
+        logger.error(f"Error invoking search type chain: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error processing search type.")
+    print(type(output))
+    return output
+
+
+async def get_search_query(query: str,search_types:str):
+    if not isinstance(query, str) or not query.strip():
+            raise ValueError("Query must be a non-empty string.")
+    current_date = datetime.now()
+    formatted_date = current_date.strftime("%d %B %Y")
+    parser = JsonOutputParser(pydantic_object=QueryGenerator)
+    prompt = PromptTemplate(template=to_get_search_query,input_variables=["Query","Date","search_types"],partial_variables={"format_instructions": parser.get_format_instructions()})
+    chain = prompt | chat | parser
+    try:
+        output = chain.invoke({"Query": query, "Date": formatted_date,"search_types": search_types})
     except Exception as e:
         logger.error(f"Error invoking search type chain: {str(e)}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error processing search type.")

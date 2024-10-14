@@ -94,6 +94,36 @@ Weather to search the internet to answer the question or not?
 """
 
 
+to_get_search_query = """<|start_header_id|>User<|end_header_id|>
+
+**Current Date**: {Date}\n
+You are a Knowledge Navigator responsible for crafting a search query that will yield the best results for the user. 
+
+
+**User Query**: {Query}\n
+
+**Search Types Required**:{search_types}\n
+
+Based on the query, evaluate the necessary search types and create a specific search query that can be used for internet searches. Consider the following search types:
+
+1. **Images**: If the query requires visual content or images.
+2. **News**: If the query relates to recent news articles or current events.
+3. **Videos**: If the query involves video content or multimedia.
+4. **Maps**: If there is a need for geographical information or navigation.
+5. **Shopping**: If the query pertains to product searches, comparisons, or online shopping.
+6. **Books**: If the query is about literature, authors, or book recommendations.
+7. **Flights**: If it relates to travel information, flight bookings, or schedules.
+8. **Finance**: If the query is focused on financial information, stock prices, or economic data.
+
+Your task is to generate a detailed and specific search query that incorporates the relevant search types identified. Make sure the query is clear, concise, and designed to yield the most relevant results on the internet.
+
+**Generated Search Query**: 
+{format_instructions}\
+<|eot_id|>"""
+
+
+
+
 to_get_search_types = """<|start_header_id|>User<|end_header_id|>
 
 **Current Date**: {Date}\n
