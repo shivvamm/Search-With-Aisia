@@ -59,7 +59,7 @@ export default function Search({ addMessage, uuid_session_id, setIsLoading }) {
     });
     console.log(body);
     const response = await fetch(
-      `http://127.0.0.1:8000/searchnew?search_type=${searchType}`,
+      `https://search-with-alisia-1.onrender.com/searchnew?search_type=${searchType}`,
       {
         method: "POST",
         headers: {
