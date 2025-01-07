@@ -67,7 +67,7 @@ export default function Chats({ messages, isLoading }) {
                     {msg.content?.data?.refined_results && (
                       <TypingEffect
                         text={msg.content.data.refined_results}
-                        speed={5}
+                        speed={4}
                       />
                     )}
                   </div>

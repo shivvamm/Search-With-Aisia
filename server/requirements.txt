@@ -3,9 +3,9 @@ groq
 langchain-core
 langchain-community
 python-dotenv
-duckduckgo_search
+duckduckgo_search==7.2.0
 pydantic
-langchain-groq 
+langchain-groq
 uvicorn
 beautifulsoup4
 redis

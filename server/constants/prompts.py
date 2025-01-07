@@ -22,7 +22,7 @@ Ensure that your response is both educational and engaging, helping the user ful
 # ## Results:{context}
 
 
-# Using this context, combine the information with your existing knowledge to deliver a thorough and clear response.\ 
+# Using this context, combine the information with your existing knowledge to deliver a thorough and clear response.\
 # Ensure that your answer is comprehensive and includes only relevant details from the search results.
 # Present the combined response in a way that directly addresses the user's query without suggesting additional sources or further verification.\
 # Also give a structured relevant resourced from the search results for better understanding.
@@ -42,7 +42,7 @@ Here are the details from the recent search results that are relevant to the que
 ## Resources:
 {resources}
 
-Using this context and the resources, combine the information with your existing knowledge to deliver a thorough and clear response. Ensure that your answer is comprehensive and includes relevant details from the search results without mentioning the sources and anything about youre knowledge. 
+Using this context and the resources, combine the information with your existing knowledge to deliver a thorough and clear response. Ensure that your answer is comprehensive and includes relevant details from the search results without mentioning the sources and anything about youre knowledge.
 
 If there are specific resources from the search results that can help in verifying or further understanding the information, include them as structured references in your response. This will help the user get a better grasp of the topic and verify the information if needed.
 
@@ -55,14 +55,14 @@ In the end with your response, give an refrence how to navigate the search resul
 to_search_or_not = """<|start_header_id|>User<|end_header_id|>
 
 **Current Date**: {Date}\n
-You are a Information Specialist you have to determine whether to search the internet or use your trained knowledge for a given query below, 
+You are a Information Specialist you have to determine whether to search the internet or use your trained knowledge for a given query below,
 Assess incoming queries to determine whether they fall into categories that require updated information, such as recent events, real-time data, or specific details that may have changed or not.
 
 **Query** : {Query}\n
 
-First compare the current date to the cutoff date of your training data. 
-If the query involves recent events, real-time information, or highly specific details that may have changed after this date, 
-you should response as True. For queries related to historical facts, established knowledge, or general information that is unlikely to have changed, you can confidently respond as False that signifies that a search is not necessary. 
+First compare the current date to the cutoff date of your training data.
+If the query involves recent events, real-time information, or highly specific details that may have changed after this date,
+you should response as True. For queries related to historical facts, established knowledge, or general information that is unlikely to have changed, you can confidently respond as False that signifies that a search is not necessary.
 Always ensure that the response you provide is clear, accurate, and relevant.
 
 Answer the user query.\n{format_instructions}\
@@ -87,7 +87,7 @@ Answer the user query.\n{format_instructions}\
 
 to_search_or_not_gemini="""
 **Current Date**: {Date}\n
-respond with ture or false on the below asked question by someone 
+respond with ture or false on the below asked question by someone
 Question : {Query}
 Weather to search the internet to answer the question or not?
 
@@ -97,7 +97,7 @@ Weather to search the internet to answer the question or not?
 to_get_search_query = """<|start_header_id|>User<|end_header_id|>
 
 **Current Date**: {Date}\n
-You are a Knowledge Navigator responsible for crafting a search query that will yield the best results for the user. 
+You are a Knowledge Navigator responsible for crafting a search query that will yield the best results for the user.
 
 
 **User Query**: {Query}\n
@@ -117,7 +117,7 @@ Based on the query, evaluate the necessary search types and create a specific se
 
 Your task is to generate a detailed and specific search query that incorporates the relevant search types identified. Make sure the query is clear, concise, and designed to yield the most relevant results on the internet.
 
-**Generated Search Query**: 
+**Generated Search Query**:
 {format_instructions}\
 <|eot_id|>"""
 
@@ -127,7 +127,7 @@ Your task is to generate a detailed and specific search query that incorporates 
 to_get_search_types = """<|start_header_id|>User<|end_header_id|>
 
 **Current Date**: {Date}\n
-You are a Knowledge Navigator responsible for categorizing queries to determine the types of searches necessary for the best responses to the user. 
+You are a Knowledge Navigator responsible for categorizing queries to determine the types of searches necessary for the best responses to the user.
 
 **Query**: {Query}\n
 
@@ -141,7 +141,6 @@ Evaluate the query and classify it into one or more of the following search type
 6. **Books**: Is the query about literature, authors, or book recommendations?
 7. **Flights**: Does it relate to travel information, flight bookings, or schedules?
 8. **Finance**: Is the query focused on financial information, stock prices, or economic data?
-
 Your response should guide the user on the necessary search types to ensure a thorough and satisfying answer.
 
 Answer the user query.\n{format_instructions}\
