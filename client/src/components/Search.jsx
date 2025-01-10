@@ -58,17 +58,20 @@ export default function Search({ addMessage, uuid_session_id, setIsLoading }) {
       search_type_resources: activeButtons,
     });
     console.log(body);
-    const response = await fetch(`http://localhost:8000/searchnew`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `https://search-with-alisia-1.onrender.com/searchnew`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: promptText,
+          session_id: uuid_session_id,
+          search_type_resources: activeButtons,
+        }),
       },
-      body: JSON.stringify({
-        query: promptText,
-        session_id: uuid_session_id,
-        search_type_resources: activeButtons,
-      }),
-    });
+    );
 
     if (!response.ok) {
       throw new Error("Network response was not ok");
