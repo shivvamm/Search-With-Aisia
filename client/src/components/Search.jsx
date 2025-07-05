@@ -1,26 +1,40 @@
 import React, { useState, useRef } from "react";
-import Generate from "./icons/Generate";
-import Voice from "./icons/Voice";
-import Image from "./icons/Image";
-import Camera from "./icons/Camera";
+import { BookOpen, GraduationCap, Lightbulb, TrendingUp, RefreshCw, Paperclip, ImageIcon, Send } from "lucide-react";
 
-export default function Search({ addMessage, uuid_session_id, setIsLoading }) {
+export default function Search({ addMessage, uuid_session_id, setIsLoading, isHomepage = false }) {
   const [promptText, setPromptText] = useState("");
   const [activeButtons, setActiveButtons] = useState([]);
-  const [lineCount, setLineCount] = useState(1);
   const promptTextInputRef = useRef(null);
   const promptTextRef = useRef(null);
-  // List items
-  const items = [
-    // "a penguin swimming in the ocean",
-    // "a penguin fishing under the water",
-    // "a penguin walking slowly on the snow",
-    // "a penguin hugging another penguin",
+
+  // Prompt suggestions
+  const promptSuggestions = [
+    {
+      title: "Explain quantum mechanics principles and their applications in modern technology",
+      icon: BookOpen,
+      category: "Academic"
+    },
+    {
+      title: "Compare and contrast different learning theories in educational psychology",
+      icon: GraduationCap,
+      category: "Educational"
+    },
+    {
+      title: "Analyze the impact of climate change on global economic systems",
+      icon: TrendingUp,
+      category: "Research"
+    },
+    {
+      title: "Break down complex mathematical concepts into simple, understandable steps",
+      icon: Lightbulb,
+      category: "Learning"
+    }
   ];
 
-  const handleItemClick = (text) => {
-    setPromptText((prevPromptText) => `${prevPromptText} ${text}`);
+  const handleSuggestionClick = (suggestion) => {
+    setPromptText(suggestion.title);
   };
+
 
   const handleChange = () => {
     if (promptTextInputRef.current) {
@@ -45,31 +59,26 @@ export default function Search({ addMessage, uuid_session_id, setIsLoading }) {
     }
     setPromptText("");
     setIsLoading(true);
-    const backendUrl = import.meta.env.VITE_LOCAL_BACKEND_URL;
-    console.log(backendUrl);
-    console.log(uuid_session_id);
-    console.log(activeButtons.length);
-    const searchType = activeButtons.length === 0 ? "text" : "other";
-    console.log(searchType);
-    console.log("This is the parameters searchtype ", searchType);
+    const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_LOCAL_BACKEND_URL;
+    console.log("Using API URL:", apiUrl);
+    console.log("Session ID:", uuid_session_id);
+    console.log("Active buttons:", activeButtons.length);
+    
     const body = JSON.stringify({
       query: promptText,
       session_id: uuid_session_id,
       search_type_resources: activeButtons,
     });
-    console.log(body);
+    console.log("Request body:", body);
+    
     const response = await fetch(
-      `https://search-with-alisia-1.onrender.com/searchnew`,
+      `${apiUrl}/searchnew`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          query: promptText,
-          session_id: uuid_session_id,
-          search_type_resources: activeButtons,
-        }),
+        body: body,
       },
     );
 
@@ -103,81 +112,116 @@ export default function Search({ addMessage, uuid_session_id, setIsLoading }) {
     }
   };
 
-  return (
-    <div className="flex w-full flex-col gap-2">
-      {items.length > 0 ? (
-        <div className="bg-neutral-50  py-4  dark:bg-neutral-900 rounded-lg ">
-          <ul className="text-neutral-600 dark:text-neutral-300 text-sm">
-            {items.map((item, index) => (
-              <li
-                key={index}
-                className="cursor-pointer px-4 py-1 hover:bg-neutral-950/5 dark:hover:bg-white/5"
-              >
-                <button className="text-left">{item}</button>
-              </li>
-            ))}
-          </ul>
+  if (isHomepage) {
+    return (
+      <div className="w-full max-w-2xl">
+        {/* Prompt Suggestions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          {promptSuggestions.map((suggestion, index) => (
+            <button
+              key={index}
+              onClick={() => handleSuggestionClick(suggestion)}
+              className="p-4 text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 group"
+            >
+              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                {suggestion.title}
+              </h3>
+            </button>
+          ))}
         </div>
-      ) : (
-        <></>
-      )}
-      <div className="flex w-full flex-col z-1000 overflow-hidden  bg-[#f4f4f4] text-[#0D0D0D]  dark:border-neutral-700 dark:dark:bg-[#2F2F2F]  dark:text-white dark:has-[p:focus]:outline-white rounded-lg">
-        <div className="p-2">
-          <p
-            id="promptLabel"
-            className="pb-1 pl-2 text-sm font-bold opacity-60 dark:text-neutral-300"
-          >
-            Message
-          </p>
-          <p
-            className="scroll-on max-h-36 w-full overflow-y-auto px-2 py-1 focus:outline-none"
-            role="textbox"
-            aria-labelledby="promptLabel"
-            contentEditable
-            onInput={handleChange}
-            onPaste={handlePaste}
-            onKeyDown={handleKeyDown}
-            ref={promptTextInputRef}
+
+
+        {/* Search Input */}
+        <div className="relative">
+          <input
+            type="text"
+            value={promptText}
+            onChange={(e) => setPromptText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                if (promptText.trim() !== "") {
+                  handleGenerate();
+                }
+              }
+            }}
+            placeholder="Ask whatever you want...."
+            className="w-full px-4 py-4 pr-16 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
           />
-          <textarea name="promptText" ref={promptTextRef} hidden />
-        </div>
-        <div className="flex w-full items-center justify-end gap-4 px-2.5 py-2">
-          <div className="flex items-center gap-2">
+          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
             <button
-              className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none focus-visible:text-neutral-600 focus-visible:outline focus-visible:outline-offset-0 focus-visible:outline-black active:bg-neutral-950/5 active:-outline-offset-2 dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300 dark:focus-visible:text-neutral-300 dark:focus-visible:outline-white dark:active:bg-white/5"
-              title="Use Camera"
-              aria-label="Use Camera"
+              className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400 rounded transition-colors"
+              title="Add Attachment"
             >
-              <Camera />
+              <Paperclip size={18} />
             </button>
-
             <button
-              className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none focus-visible:text-neutral-600 focus-visible:outline focus-visible:outline-offset-0 focus-visible:outline-black active:bg-neutral-950/5 active:-outline-offset-2 dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300 dark:focus-visible:text-neutral-300 dark:focus-visible:outline-white dark:active:bg-white/5"
-              title="Upload Image"
-              aria-label="Upload Image"
+              className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400 rounded transition-colors"
+              title="Use Image"
             >
-              <Image />
+              <ImageIcon size={18} />
             </button>
-
             <button
-              className="rounded-full p-1 text-neutral-600/75 hover:bg-neutral-950/10 hover:text-neutral-600 focus:outline-none focus-visible:text-neutral-600 focus-visible:outline focus-visible:outline-offset-0 focus-visible:outline-black active:bg-neutral-950/5 active:-outline-offset-2 dark:text-neutral-300/75 dark:hover:bg-white/10 dark:hover:text-neutral-300 dark:focus-visible:text-neutral-300 dark:focus-visible:outline-white dark:active:bg-white/5"
-              title="Use Voice"
-              aria-label="Use Voice"
+              type="button"
+              onClick={handleGenerate}
+              disabled={!promptText.trim()}
+              className="p-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-lg"
             >
-              <Voice />
+              <Send size={18} />
             </button>
           </div>
+        </div>
 
+        <textarea name="promptText" ref={promptTextRef} hidden />
+      </div>
+    );
+  }
+
+  // Chat mode layout (bottom input)
+  return (
+    <div className="p-4">
+      <div className="relative flex items-center">
+        <input
+          type="text"
+          value={promptText}
+          onChange={(e) => setPromptText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              if (promptText.trim() !== "") {
+                handleGenerate();
+              }
+            }
+          }}
+          placeholder="Ask me anything..."
+          className="flex-1 px-4 py-3 pr-24 text-sm bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500"
+        />
+        <div className="absolute right-2 flex items-center gap-2">
+          <button
+            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+            title="Attach"
+            aria-label="Attach"
+          >
+            <Paperclip size={18} />
+          </button>
+          <button
+            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+            title="Use Image"
+            aria-label="Use Image"
+          >
+            <ImageIcon size={18} />
+          </button>
           <button
             type="button"
             onClick={handleGenerate}
-            className="flex cursor-pointer items-center gap-2 whitespace-nowrap bg-black px-4 py-2 text-center text-xs font-medium tracking-wide text-neutral-100 transition hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black active:opacity-100 active:outline-offset-0 disabled:cursor-not-allowed disabled:opacity-75 dark:bg-white dark:text-black  dark:bg-white dark:text-black dark:focus-visible:outline-white rounded-md"
+            disabled={!promptText.trim()}
+            className="p-2 text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-lg"
           >
-            <Generate />
-            Generate
+            <Send size={18} />
           </button>
         </div>
       </div>
+      <textarea name="promptText" ref={promptTextRef} hidden />
     </div>
   );
 }

@@ -94,6 +94,62 @@ class GoogleScrape:
                 break
 
         return video_results
+    
+    async def scrape_text(self, query, num_results=10):
+        """Scrape Google text search results"""
+        print(f"Searching Google for: {query}")
+        
+        url = f"{self.base_url}{urllib.parse.quote(query)}&num={num_results}"
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=self.headers)
+        
+        if response.status_code != 200:
+            print(f"Failed to retrieve results for {query}")
+            return []
+        
+        soup = BeautifulSoup(response.text, 'html.parser')
+        results = []
+        
+        # Find all search result divs
+        search_divs = soup.find_all('div', class_='g')
+        
+        for div in search_divs[:num_results]:
+            try:
+                # Extract title
+                title_elem = div.find('h3')
+                if not title_elem:
+                    continue
+                title = title_elem.get_text()
+                
+                # Extract URL
+                link_elem = div.find('a', href=True)
+                if not link_elem:
+                    continue
+                href = link_elem['href']
+                
+                # Extract snippet/description
+                snippet = ""
+                # Try to find snippet in various possible locations
+                snippet_elem = div.find('span', class_='aCOpRe') or \
+                              div.find('div', class_='VwiC3b') or \
+                              div.find('div', class_='IsZvec') or \
+                              div.find('span', class_='st')
+                
+                if snippet_elem:
+                    snippet = snippet_elem.get_text(strip=True)
+                
+                results.append({
+                    "title": title,
+                    "href": href,
+                    "body": snippet
+                })
+                
+            except Exception as e:
+                print(f"Error parsing result: {e}")
+                continue
+        
+        return results
 
 
 

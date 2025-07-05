@@ -110,10 +110,10 @@ async def search_new(request:Request,query: Query):
             to_sreach = await get_decision(query.query)
 
             if to_sreach:
-                results = await search_handler(search_query["query"], search_type)
+                results = await search_handler(search_query["query"], "text")
                 response = await chat_handler(query.query,query.session_id,results,resources="")
             else:
-                response = await chat_handler(query.query,query.session_id,results="",resources="")
+                response = await chat_handler(query.query,query.session_id,results=[],resources="")
             return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={
@@ -126,11 +126,28 @@ async def search_new(request:Request,query: Query):
 
         elif len(search_type["search_types"]) >0:
             valid_search_types = ["Images", "News", "Maps","Videos","Shopping","Books","Flights","Finance"]
-            requested_search_type = search_type["search_types"]
+            # Convert to lowercase for comparison and then capitalize
+            requested_search_type = [item.capitalize() for item in search_type["search_types"]]
+            
+            # Handle special cases for proper capitalization
+            type_mapping = {
+                "images": "Images",
+                "news": "News", 
+                "maps": "Maps",
+                "videos": "Videos",
+                "shopping": "Shopping",
+                "books": "Books",
+                "flights": "Flights",
+                "finance": "Finance"
+            }
+            
+            # Convert using mapping
+            requested_search_type = [type_mapping.get(item.lower(), item.capitalize()) for item in search_type["search_types"]]
+            
             if not all(item in valid_search_types for item in requested_search_type):
                 return JSONResponse(
                 status_code=400,
-                content={"status": "error", "message": "Invalid search type provided."}
+                content={"status": "error", "message": f"Invalid search type provided. Got: {search_type['search_types']}, Valid: {valid_search_types}"}
                 )
             results=await search_handler(query.query, "text")
             for i in requested_search_type:

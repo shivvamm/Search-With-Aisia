@@ -56,7 +56,8 @@ system_with_resources = ChatPromptTemplate.from_messages(
 )
 
 def get_message_history(session_id: str) -> RedisChatMessageHistory:
-    return RedisChatMessageHistory(session_id, url=os.getenv("REDIS_URL"))
+    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+    return RedisChatMessageHistory(session_id, url=redis_url)
 
 
 
@@ -131,6 +132,8 @@ async def get_search_query(query: str,search_types:str):
 
 async def chat_handler(query,session_id,results,resources):
     try:
+        print(f"Chat handler called with: query={query}, results={results}, resources={resources}")
+        
         if resources == "":
             prompt = system_without_resources
             context = "" 
@@ -138,6 +141,12 @@ async def chat_handler(query,session_id,results,resources):
             prompt = system_with_resources
             context = format_search_results(results) 
 
+        # Ensure results is a list before formatting
+        if not isinstance(results, list):
+            results = []
+            
+        context = format_search_results(results)
+        print(f"Context after formatting: {context}")
 
         rag_chain = prompt | llm | StrOutputParser()
         with_message_history = RunnableWithMessageHistory(
@@ -146,12 +155,14 @@ async def chat_handler(query,session_id,results,resources):
                 input_messages_key="input",
                 history_messages_key="history",
             )
-        context = format_search_results(results)
 
         final_response = await with_message_history.ainvoke(
                 {"context": context,"resources": resources, "input": query},
                 config={"configurable": {"session_id": session_id}},
             )
+        
+        print(f"Final response: {final_response}")
+        
         response_data = {
                 "refined_results": final_response,
                 "results": results
@@ -160,6 +171,8 @@ async def chat_handler(query,session_id,results,resources):
 
     except Exception as e:
         logger.error(f"Error in chat handler: {str(e)}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An unexpected error occurred in chat handler.")
 
 

@@ -2,6 +2,7 @@
 from duckduckgo_search import DDGS
 from typing import List, Dict
 import requests
+from .scrapegoogle import GoogleScrape
 
 def test_proxy(proxy):
     try:
@@ -36,8 +37,23 @@ def format_search_results(results: List[Dict[str, str]]) -> str:
 
 async def search_handler(query: str, search_type: str):
     if search_type == "text":
-        results = list(DDGS().text(query,max_results=10))
-        return results
+        # Try Google scraper first
+        try:
+            google_scraper = GoogleScrape()
+            results = await google_scraper.scrape_text(query, num_results=10)
+            if results:
+                return results
+        except Exception as e:
+            print(f"Google scraper failed: {e}, falling back to DuckDuckGo")
+        
+        # Fallback to DuckDuckGo if Google fails
+        try:
+            results = list(DDGS().text(query, max_results=10))
+            return results
+        except Exception as e:
+            print(f"DuckDuckGo also failed: {e}")
+            return []
+    
     elif search_type == "image":
         results = list(DDGS().images(query,max_results=5))
         return results
