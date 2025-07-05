@@ -1,7 +1,8 @@
 import React, { useState, useRef } from "react";
 import { BookOpen, GraduationCap, Lightbulb, TrendingUp, RefreshCw, Paperclip, ImageIcon, Send } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 
-export default function Search({ addMessage, uuid_session_id, setIsLoading, isHomepage = false }) {
+export default function Search({ addMessage, updateMessage, uuid_session_id, setIsLoading, isHomepage = false }) {
   const [promptText, setPromptText] = useState("");
   const [activeButtons, setActiveButtons] = useState([]);
   const promptTextInputRef = useRef(null);
@@ -53,43 +54,72 @@ export default function Search({ addMessage, uuid_session_id, setIsLoading, isHo
       alert("Please enter a something");
       return;
     }
-    addMessage("user", promptText);
+    
+    const queryText = promptText;
+    
+    // Clear input immediately
     if (promptTextInputRef.current) {
       promptTextInputRef.current.innerText = "";
     }
     setPromptText("");
     setIsLoading(true);
-    const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_LOCAL_BACKEND_URL;
-    console.log("Using API URL:", apiUrl);
-    console.log("Session ID:", uuid_session_id);
-    console.log("Active buttons:", activeButtons.length);
     
-    const body = JSON.stringify({
-      query: promptText,
-      session_id: uuid_session_id,
-      search_type_resources: activeButtons,
-    });
-    console.log("Request body:", body);
+    let messageId = null;
     
-    const response = await fetch(
-      `${apiUrl}/searchnew`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      // Save user query to Supabase and get message ID
+      messageId = await addMessage("user", queryText);
+      
+      if (!messageId) {
+        throw new Error("Failed to save query");
+      }
+      
+      const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_LOCAL_BACKEND_URL;
+      console.log("Using API URL:", apiUrl);
+      console.log("Session ID:", uuid_session_id);
+      console.log("Message ID:", messageId);
+      console.log("Active buttons:", activeButtons.length);
+      
+      const body = JSON.stringify({
+        query: queryText,
+        session_id: uuid_session_id,
+        search_type_resources: activeButtons,
+      });
+      console.log("Request body:", body);
+      
+      const response = await fetch(
+        `${apiUrl}/searchnew`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: body,
         },
-        body: body,
-      },
-    );
+      );
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log("API Response:", data);
+      
+      // Save the response to Supabase
+      await updateMessage(messageId, data);
+      
+    } catch (error) {
+      console.error("Error fetching response:", error);
+      
+      // If we have a messageId, update it with error message
+      if (messageId) {
+        await updateMessage(messageId, "Sorry, I encountered an error while processing your request. Please try again.");
+      } else {
+        alert("Sorry, I encountered an error while processing your request. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
-
-    const data = await response.json();
-    console.log(data);
-    setIsLoading(false);
-    addMessage("ai", data);
   };
 
   const handleKeyDown = (e) => {

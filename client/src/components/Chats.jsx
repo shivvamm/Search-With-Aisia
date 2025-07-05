@@ -3,11 +3,15 @@ import Edit from "./icons/Edit";
 import Bot from "./icons/Bot";
 import Speak from "./icons/Speak";
 import TypingEffect from "./effects/TypingEffect";
+import ThinkingLoader from "./ThinkingLoader";
+import { useChat } from "../contexts/ChatContext";
+import { Loader2 } from "lucide-react";
 
 export default function Chats({ messages, isLoading }) {
   const [copiedToClipboard, setCopiedToClipboard] = useState(null);
   const targetTextRef = useRef(null);
   const [loadingImages, setLoadingImages] = useState(true);
+  const { pendingRequests } = useChat();
 
   const copyToClipboard = (text) => {
     if (text) {
@@ -54,29 +58,32 @@ export default function Chats({ messages, isLoading }) {
               </p>
             </div>
           ) : (
-            messages.map((msg, index) => (
-              <div key={index} className="mb-6">
-                {msg.type === "user" ? (
-                  <div className="flex justify-end">
-                    <div className="max-w-[70%] px-4 py-2 bg-black dark:bg-gray-700 text-white dark:text-gray-100 rounded-2xl">
-                      <p className="text-sm">
-                        {msg.content}
-                      </p>
+            <>
+              {messages.map((msg, index) => (
+                <div key={index} className="mb-6">
+                  {msg.type === "user" ? (
+                    <div className="flex justify-end">
+                      <div className="max-w-[70%] px-4 py-2 bg-black dark:bg-gray-700 text-white dark:text-gray-100 rounded-2xl">
+                        <p className="text-sm">
+                          {msg.content}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ) : (
+                  ) : (
                 <div className="flex gap-3">
                   <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-gray-800 flex-shrink-0 flex items-center justify-center">
                     <img src="image.webp" className="w-6 h-6 rounded-full" />
                   </div>
                   <div className="flex-1">
                     <div className="text-gray-900 dark:text-gray-100">
-                      {msg.content?.data?.refined_results && (
+                      {msg.content?.data?.refined_results ? (
                         <TypingEffect
                           text={msg.content.data.refined_results}
                           speed={4}
                         />
-                      )}
+                      ) : typeof msg.content === 'string' ? (
+                        <p>{msg.content}</p>
+                      ) : null}
                     </div>
 
                     <div className="mt-2 flex items-center gap-1">
@@ -140,7 +147,7 @@ export default function Chats({ messages, isLoading }) {
                         <Speak />
                       </button>
                     </div>
-                    {msg.content.resources &&
+                    {msg.content?.resources &&
                       Object.keys(msg.content.resources).length > 0 && (
                         <div className="mt-4">
                           {Object.keys(msg.content.resources).length > 1 ? (
@@ -160,9 +167,17 @@ export default function Chats({ messages, isLoading }) {
                   </div>
                 </div>
               )}
-            </div>
-          ))
-        )}
+                </div>
+              ))}
+              
+              {/* Show loader for any pending requests */}
+              {pendingRequests.size > 0 && (
+                <div className="mb-6">
+                  <ThinkingLoader />
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>

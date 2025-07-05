@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useChat } from '../contexts/ChatContext';
 import { useNavigate } from 'react-router-dom';
+import ChatList from './ChatList';
 import { 
   Plus, 
   FolderOpen, 
@@ -32,6 +34,7 @@ const TooltipButton = ({ onClick, icon: Icon, label, className = "", isCollapsed
 
 export default function Sidebar() {
   const { currentUser, logout } = useAuth();
+  const { createNewChat } = useChat();
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -45,6 +48,7 @@ export default function Sidebar() {
   };
 
   const handleNewChat = () => {
+    createNewChat();
     navigate('/');
   };
 
@@ -131,6 +135,11 @@ export default function Sidebar() {
                 label="History"
                 isCollapsed={isCollapsed}
               />
+            </div>
+            
+            {/* Chat Sessions */}
+            <div className="mt-6">
+              <ChatList isCollapsed={isCollapsed} />
             </div>
           </nav>
 
