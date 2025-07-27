@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { 
   User, 
   Mail, 
-  Camera, 
   Save, 
   ArrowLeft,
   Key,
@@ -73,21 +72,8 @@ export default function Profile() {
         {/* Profile Card */}
         <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 mb-6">
           <div className="flex items-center gap-6 mb-6">
-            <div className="relative">
-              {currentUser?.user_metadata?.avatar_url ? (
-                <img
-                  src={currentUser.user_metadata.avatar_url}
-                  alt="Profile"
-                  className="w-20 h-20 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-20 h-20 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                  <User className="w-8 h-8 text-gray-600 dark:text-gray-400" />
-                </div>
-              )}
-              <button className="absolute -bottom-1 -right-1 p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
-                <Camera className="w-3 h-3" />
-              </button>
+            <div className="w-20 h-20 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+              <User className="w-8 h-8 text-gray-600 dark:text-gray-400" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">

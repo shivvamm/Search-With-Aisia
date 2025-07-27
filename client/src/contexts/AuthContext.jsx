@@ -42,11 +42,10 @@ export function AuthProvider({ children }) {
     return data;
   }
 
-  async function updateUserProfile(displayName, avatarUrl) {
+  async function updateUserProfile(displayName) {
     const { data, error } = await supabase.auth.updateUser({
       data: {
-        full_name: displayName,
-        avatar_url: avatarUrl
+        full_name: displayName
       }
     });
     if (error) throw error;

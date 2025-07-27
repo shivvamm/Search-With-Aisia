@@ -62,7 +62,11 @@ function MainApp() {
           <div className="flex-1 flex flex-col items-center justify-center px-4">
             <div className="max-w-2xl w-full text-center mb-8">
               <h1 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Hi there, <span className="text-purple-600 dark:text-purple-400">{getUserName()}</span>
+                {currentUser ? (
+                  <>Hi there, <span className="text-purple-600 dark:text-purple-400">{getUserName()}</span></>
+                ) : (
+                  'Hi there'
+                )}
               </h1>
               <h2 className="text-3xl font-medium text-gray-700 dark:text-gray-300 mb-8">
                 What would <span className="text-blue-600 dark:text-blue-400">you like to know?</span>

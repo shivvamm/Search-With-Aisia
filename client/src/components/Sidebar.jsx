@@ -62,7 +62,7 @@ export default function Sidebar() {
       <div className="p-4 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-3">
           <img 
-            src="/alisia.svg" 
+            src="image.webp" 
             alt="Alisia Logo" 
             className="w-8 h-8 rounded-lg"
           />
@@ -164,17 +164,9 @@ export default function Sidebar() {
                 onClick={handleProfile}
                 className="flex items-center"
               >
-                {currentUser.user_metadata?.avatar_url ? (
-                  <img
-                    src={currentUser.user_metadata.avatar_url}
-                    alt="Profile"
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                  </div>
-                )}
+                <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-white dark:border-gray-900 rounded-full"></div>
               </button>
               {isCollapsed && (
