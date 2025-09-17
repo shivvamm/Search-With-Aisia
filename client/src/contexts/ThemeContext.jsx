@@ -8,46 +8,43 @@ export function useTheme() {
 
 export function ThemeProvider({ children }) {
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check localStorage first, then system preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      return savedTheme === 'dark';
-    }
+    // Always follow system preference
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
+  // Listen for system theme changes
   useEffect(() => {
-    // Apply theme to document
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const handleChange = (e) => {
+      setIsDarkMode(e.matches);
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  // Apply theme to document
+  useEffect(() => {
     const html = document.documentElement;
     if (isDarkMode) {
       html.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      console.log('Dark mode enabled');
     } else {
       html.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      console.log('Light mode enabled');
     }
   }, [isDarkMode]);
 
-  // Initial theme application on mount
+  // Clean up old localStorage keys
   useEffect(() => {
-    const html = document.documentElement;
-    if (isDarkMode) {
-      html.classList.add('dark');
-    } else {
-      html.classList.remove('dark');
-    }
+    localStorage.removeItem('theme');
+    localStorage.removeItem('themeMode');
   }, []);
-
-  const toggleDarkMode = () => {
-    console.log('Toggling dark mode from', isDarkMode, 'to', !isDarkMode);
-    setIsDarkMode(!isDarkMode);
-  };
 
   const value = {
     isDarkMode,
-    toggleDarkMode,
+    themeMode: 'system', // Always system
+    setTheme: () => {}, // No-op for compatibility
+    toggleDarkMode: () => {}, // No-op for compatibility
     setDarkMode: setIsDarkMode
   };
 

@@ -9,34 +9,15 @@ import {
   Clock, 
   Settings,
   User,
-  ChevronLeft,
-  ChevronRight
+  X,
+  Home
 } from 'lucide-react';
 
-// Tooltip component for collapsed sidebar
-const TooltipButton = ({ onClick, icon: Icon, label, className = "", isCollapsed }) => (
-  <div className="relative group">
-    <button
-      onClick={onClick}
-      className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 text-left text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors ${className}`}
-    >
-      <Icon className="w-4 h-4 flex-shrink-0" />
-      {!isCollapsed && <span className="text-sm">{label}</span>}
-    </button>
-    {isCollapsed && (
-      <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-        {label}
-        <div className="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-gray-800 dark:border-r-gray-700"></div>
-      </div>
-    )}
-  </div>
-);
 
 export default function Sidebar() {
   const { currentUser, logout } = useAuth();
   const { createNewChat } = useChat();
   const navigate = useNavigate();
-  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -57,157 +38,82 @@ export default function Sidebar() {
   };
 
   return (
-    <div className={`${isCollapsed ? 'w-16' : 'w-64'} h-screen bg-gray-50 dark:bg-[#1A1A1A] border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300`}>
-      {/* Logo */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-800">
-        <div className="flex items-center gap-3">
-          <img 
-            src="image.webp" 
-            alt="Alisia Logo" 
-            className="w-8 h-8 rounded-lg"
-          />
-          {!isCollapsed && (
-            <span className="font-semibold text-gray-900 dark:text-white">
-              Alisia
-            </span>
-          )}
-          {!isCollapsed && (
+    <div className="w-[68px] h-screen bg-white dark:bg-gray-900 border-r border-[#E5E5E5] dark:border-gray-800 flex flex-col">
+      {/* Logo/Close button */}
+      <div className="h-[68px] flex items-center justify-center border-b border-[#E5E5E5] dark:border-gray-800">
+        <button className="w-9 h-9 rounded-lg bg-[#1A1A1A] dark:bg-gray-700 flex items-center justify-center">
+          <X className="w-4 h-4 text-white" />
+        </button>
+      </div>
+
+      {/* New Chat Button */}
+      <div className="flex items-center justify-center py-4">
+        <button
+          onClick={handleNewChat}
+          className="w-9 h-9 rounded-lg border border-[#E5E5E5] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center"
+        >
+          <Plus className="w-4 h-4 text-[#666666] dark:text-gray-400" />
+        </button>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 flex flex-col items-center py-4 space-y-3">
+        <button
+          onClick={() => navigate('/')}
+          className="w-9 h-9 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center"
+        >
+          <Home className="w-4 h-4 text-[#666666] dark:text-gray-400" />
+        </button>
+        
+        <button
+          onClick={() => navigate('/library')}
+          className="w-9 h-9 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center"
+        >
+          <FolderOpen className="w-4 h-4 text-[#666666] dark:text-gray-400" />
+        </button>
+        
+        <button
+          onClick={() => navigate('/history')}
+          className="w-9 h-9 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center"
+        >
+          <Clock className="w-4 h-4 text-[#666666] dark:text-gray-400" />
+        </button>
+      </nav>
+
+      {/* Settings */}
+      <div className="pb-4">
+        <div className="flex items-center justify-center">
+          <button
+            onClick={() => navigate('/settings')}
+            className="w-9 h-9 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center"
+          >
+            <Settings className="w-4 h-4 text-[#666666] dark:text-gray-400" />
+          </button>
+        </div>
+      </div>
+
+      {/* User Profile */}
+      <div className="border-t border-[#E5E5E5] dark:border-gray-800 py-4">
+        <div className="flex items-center justify-center">
+          {currentUser ? (
             <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="ml-auto p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-              title="Collapse sidebar"
+              onClick={handleProfile}
+              className="relative"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <div className="w-9 h-9 bg-[#E5E5E5] dark:bg-gray-700 rounded-full flex items-center justify-center">
+                <User className="w-4 h-4 text-[#666666] dark:text-gray-400" />
+              </div>
+              <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full"></div>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="w-9 h-9 bg-[#E5E5E5] dark:bg-gray-700 rounded-full flex items-center justify-center hover:bg-[#D4D4D4] dark:hover:bg-gray-600"
+            >
+              <User className="w-4 h-4 text-[#666666] dark:text-gray-400" />
             </button>
           )}
         </div>
-        {isCollapsed && (
-          <div className="mt-2 flex justify-center">
-            <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-              title="Expand sidebar"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-      </div>
-
-{currentUser && (
-        <>
-          {/* New Chat Button */}
-          <div className="p-4">
-            <div className="relative group">
-              <button
-                onClick={handleNewChat}
-                className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 text-left bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors`}
-              >
-                <Plus className="w-4 h-4 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                {!isCollapsed && (
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    New Chat
-                  </span>
-                )}
-              </button>
-              {isCollapsed && (
-                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                  New Chat
-                  <div className="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-gray-800 dark:border-r-gray-700"></div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 px-4">
-            <div className="space-y-1">
-              <TooltipButton
-                onClick={() => navigate('/library')}
-                icon={FolderOpen}
-                label="Library"
-                isCollapsed={isCollapsed}
-              />
-              
-              <TooltipButton
-                onClick={() => navigate('/history')}
-                icon={Clock}
-                label="History"
-                isCollapsed={isCollapsed}
-              />
-            </div>
-            
-            {/* Chat Sessions */}
-            <div className="mt-6">
-              <ChatList isCollapsed={isCollapsed} />
-            </div>
-          </nav>
-
-          {/* Settings */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-800">
-            <TooltipButton
-              onClick={() => navigate('/settings')}
-              icon={Settings}
-              label="Settings"
-              isCollapsed={isCollapsed}
-            />
-          </div>
-        </>
-      )}
-
-      {/* User Profile */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-800">
-        {currentUser ? (
-          <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
-            <div className="relative group">
-              <button
-                onClick={handleProfile}
-                className="flex items-center"
-              >
-                <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                </div>
-                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 border-2 border-white dark:border-gray-900 rounded-full"></div>
-              </button>
-              {isCollapsed && (
-                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                  {currentUser.user_metadata?.full_name || currentUser.email}
-                  <div className="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-gray-800 dark:border-r-gray-700"></div>
-                </div>
-              )}
-            </div>
-            {!isCollapsed && (
-              <div className="flex-1 min-w-0">
-                <button
-                  onClick={handleProfile}
-                  className="text-left w-full"
-                >
-                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                    {currentUser.user_metadata?.full_name || currentUser.email}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    {currentUser.email}
-                  </p>
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="relative group">
-            <button
-              onClick={() => navigate('/login')}
-              className={`w-full ${isCollapsed ? 'px-2' : 'px-3'} py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors`}
-            >
-              {isCollapsed ? <User className="w-4 h-4 mx-auto" /> : "Sign In"}
-            </button>
-            {isCollapsed && (
-              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                Sign In
-                <div className="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-gray-800 dark:border-r-gray-700"></div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );

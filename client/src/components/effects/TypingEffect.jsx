@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 
-const TypingEffect = ({ text, speed }) => {
+const TypingEffect = ({ text, speed, className = "" }) => {
   const [currentText, setCurrentText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -18,7 +18,7 @@ const TypingEffect = ({ text, speed }) => {
 
   return (
     <>
-      <span className="text-pretty mt-4 text-sm text-neutral-600 dark:text-neutral-300">
+      <span className={`text-pretty mt-4 text-sm text-gray-900 dark:text-gray-100 ${className}`}>
         <ReactMarkdown>{currentText}</ReactMarkdown>
       </span>
     </>

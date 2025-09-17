@@ -80,9 +80,10 @@ export default function Chats({ messages, isLoading }) {
                         <TypingEffect
                           text={msg.content.data.refined_results}
                           speed={4}
+                          className="text-gray-900 dark:text-gray-100"
                         />
                       ) : typeof msg.content === 'string' ? (
-                        <p>{msg.content}</p>
+                        <p className="text-gray-900 dark:text-gray-100">{msg.content}</p>
                       ) : null}
                     </div>
 
@@ -150,18 +151,29 @@ export default function Chats({ messages, isLoading }) {
                     {msg.content?.resources &&
                       Object.keys(msg.content.resources).length > 0 && (
                         <div className="mt-4">
-                          {Object.keys(msg.content.resources).length > 1 ? (
-                            <Tabs resources={msg.content.resources} />
-                          ) : (
-                            <ResourceDisplay
-                              resource={
-                                msg.content.resources[
-                                  Object.keys(msg.content.resources)[0]
-                                ]
-                              }
-                              activeTab={Object.keys(msg.content.resources)[0]}
-                            />
-                          )}
+                          {(() => {
+                            // Filter out resources with empty arrays
+                            const resourcesWithData = Object.fromEntries(
+                              Object.entries(msg.content.resources).filter(([key, value]) => value && value.length > 0)
+                            );
+
+                            if (Object.keys(resourcesWithData).length === 0) {
+                              return null;
+                            }
+
+                            return Object.keys(resourcesWithData).length > 1 ? (
+                              <Tabs resources={msg.content.resources} />
+                            ) : (
+                              <ResourceDisplay
+                                resource={
+                                  resourcesWithData[
+                                    Object.keys(resourcesWithData)[0]
+                                  ]
+                                }
+                                activeTab={Object.keys(resourcesWithData)[0]}
+                              />
+                            );
+                          })()}
                         </div>
                       )}
                   </div>
@@ -185,13 +197,18 @@ export default function Chats({ messages, isLoading }) {
 }
 
 const Tabs = ({ resources }) => {
-  const [activeTab, setActiveTab] = useState(Object.keys(resources)[0]);
+  // Filter out resources with empty arrays
+  const resourcesWithData = Object.fromEntries(
+    Object.entries(resources).filter(([key, value]) => value && value.length > 0)
+  );
+
+  const [activeTab, setActiveTab] = useState(Object.keys(resourcesWithData)[0]);
 
   return (
     <div>
       <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-500 dark:border-gray-800">
         <ul className="flex flex-wrap -mb-px">
-          {Object.keys(resources).map((key) => (
+          {Object.keys(resourcesWithData).map((key) => (
             <li key={key} className="mr-2">
               <button
                 className={`inline-block p-3 border-b-2 rounded-t-lg transition-colors ${
@@ -208,7 +225,7 @@ const Tabs = ({ resources }) => {
           ))}
         </ul>
       </div>
-      <ResourceDisplay resource={resources[activeTab]} activeTab={activeTab} />
+      <ResourceDisplay resource={resourcesWithData[activeTab]} activeTab={activeTab} />
     </div>
   );
 };

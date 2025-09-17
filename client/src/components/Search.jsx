@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { BookOpen, GraduationCap, Lightbulb, TrendingUp, RefreshCw, Paperclip, ImageIcon, Send } from "lucide-react";
+import { UserCircle, Mail, FileText, Sparkles, RefreshCw, Paperclip, ImageIcon, Send, Globe } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
 export default function Search({ addMessage, updateMessage, uuid_session_id, setIsLoading, isHomepage = false }) {
@@ -11,24 +11,24 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
   // Prompt suggestions
   const promptSuggestions = [
     {
-      title: "Explain quantum mechanics principles and their applications in modern technology",
-      icon: BookOpen,
-      category: "Academic"
+      title: "Write a to-do list for a personal project or task",
+      icon: UserCircle,
+      category: "Personal"
     },
     {
-      title: "Compare and contrast different learning theories in educational psychology",
-      icon: GraduationCap,
-      category: "Educational"
+      title: "Generate an email to reply to a job offer",
+      icon: Mail,
+      category: "Professional"
     },
     {
-      title: "Analyze the impact of climate change on global economic systems",
-      icon: TrendingUp,
-      category: "Research"
+      title: "Summarise this article or text for me in one paragraph",
+      icon: FileText,
+      category: "Summary"
     },
     {
-      title: "Break down complex mathematical concepts into simple, understandable steps",
-      icon: Lightbulb,
-      category: "Learning"
+      title: "How does AI work in a technical capacity",
+      icon: Sparkles,
+      category: "Technical"
     }
   ];
 
@@ -144,22 +144,35 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
 
   if (isHomepage) {
     return (
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-[800px]">
         {/* Prompt Suggestions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-3 mb-8">
           {promptSuggestions.map((suggestion, index) => (
             <button
               key={index}
               onClick={() => handleSuggestionClick(suggestion)}
-              className="p-4 text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 group"
+              className="p-5 text-left bg-white dark:bg-gray-800 border border-[#E5E5E5] dark:border-gray-700 rounded-xl hover:border-[#D4D4D4] dark:hover:border-gray-600 group"
             >
-              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                {suggestion.title}
-              </h3>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#F4F4F4] flex items-center justify-center flex-shrink-0">
+                  <suggestion.icon className="w-4 h-4 text-[#666666] dark:text-gray-400" />
+                </div>
+                <h3 className="text-sm font-normal text-[#1A1A1A] dark:text-gray-100 leading-relaxed">
+                  {suggestion.title}
+                </h3>
+              </div>
             </button>
           ))}
         </div>
 
+
+        {/* Refresh Prompts Button */}
+        <div className="flex justify-center mb-12">
+          <button className="flex items-center gap-2 text-sm text-[#666666] dark:text-gray-400 hover:text-[#1A1A1A] dark:hover:text-gray-100">
+            <RefreshCw className="w-4 h-4" />
+            Refresh Prompts
+          </button>
+        </div>
 
         {/* Search Input */}
         <div className="relative">
@@ -176,30 +189,33 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
               }
             }}
             placeholder="Ask whatever you want...."
-            className="w-full px-4 py-4 pr-16 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+            className="w-full h-[56px] px-5 pr-32 text-base bg-white dark:bg-gray-800 border border-[#E5E5E5] dark:border-gray-700 rounded-xl focus:outline-none focus:border-[#D4D4D4] dark:focus:border-gray-600 placeholder:text-[#999999] dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
           />
-          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
             <button
-              className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400 rounded transition-colors"
+              className="p-2.5 text-[#999999] dark:text-gray-500 hover:text-[#666666] dark:hover:text-gray-400 rounded-lg hover:bg-[#F4F4F4] dark:hover:bg-gray-700"
               title="Add Attachment"
             >
-              <Paperclip size={18} />
+              <Paperclip className="w-5 h-5" />
             </button>
             <button
-              className="p-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400 rounded transition-colors"
+              className="p-2.5 text-[#999999] dark:text-gray-500 hover:text-[#666666] dark:hover:text-gray-400 rounded-lg hover:bg-[#F4F4F4] dark:hover:bg-gray-700"
               title="Use Image"
             >
-              <ImageIcon size={18} />
+              <ImageIcon className="w-5 h-5" />
             </button>
-            <button
-              type="button"
-              onClick={handleGenerate}
-              disabled={!promptText.trim()}
-              className="p-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-lg"
-            >
-              <Send size={18} />
-            </button>
+            <div className="ml-1 mr-1 flex items-center gap-2">
+              <button className="h-10 px-4 text-sm font-medium text-[#666666] dark:text-gray-400 bg-[#F4F4F4] dark:bg-gray-700 rounded-lg hover:bg-[#E5E5E5] dark:hover:bg-gray-600 flex items-center gap-2">
+                <Globe className="w-4 h-4" />
+                All Web
+              </button>
+            </div>
           </div>
+        </div>
+
+        {/* Character Counter */}
+        <div className="mt-3 text-right">
+          <span className="text-sm text-[#999999] dark:text-gray-500">0/1000</span>
         </div>
 
         <textarea name="promptText" ref={promptTextRef} hidden />
@@ -210,7 +226,7 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
   // Chat mode layout (bottom input)
   return (
     <div className="p-4">
-      <div className="relative flex items-center">
+      <div className="relative">
         <input
           type="text"
           value={promptText}
@@ -224,30 +240,30 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
             }
           }}
           placeholder="Ask me anything..."
-          className="flex-1 px-4 py-3 pr-24 text-sm bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500"
+          className="w-full h-[48px] px-4 pr-32 text-sm bg-white dark:bg-gray-800 border border-[#E5E5E5] dark:border-gray-700 rounded-xl focus:outline-none focus:border-[#D4D4D4] dark:focus:border-gray-600 placeholder:text-[#999999] dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
         />
-        <div className="absolute right-2 flex items-center gap-2">
+        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
           <button
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+            className="p-2 text-[#999999] dark:text-gray-500 hover:text-[#666666] dark:hover:text-gray-400 rounded-lg hover:bg-[#F4F4F4] dark:hover:bg-gray-700"
             title="Attach"
             aria-label="Attach"
           >
-            <Paperclip size={18} />
+            <Paperclip className="w-4 h-4" />
           </button>
           <button
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+            className="p-2 text-[#999999] dark:text-gray-500 hover:text-[#666666] dark:hover:text-gray-400 rounded-lg hover:bg-[#F4F4F4] dark:hover:bg-gray-700"
             title="Use Image"
             aria-label="Use Image"
           >
-            <ImageIcon size={18} />
+            <ImageIcon className="w-4 h-4" />
           </button>
           <button
             type="button"
             onClick={handleGenerate}
             disabled={!promptText.trim()}
-            className="p-2 text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-lg"
+            className="p-2 ml-1 bg-[#7C3AED] text-white rounded-lg hover:bg-[#6D28D9] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Send size={18} />
+            <Send className="w-4 h-4" />
           </button>
         </div>
       </div>

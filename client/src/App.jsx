@@ -15,13 +15,13 @@ import { v4 as uuidv4 } from "uuid";
 
 function MainApp() {
   const { currentUser } = useAuth();
-  const { 
-    currentSessionId, 
-    currentMessages, 
+  const {
+    currentSessionId,
+    currentMessages,
     saveQuery,
     updateResponse,
     createNewChat,
-    getCurrentSession 
+    getCurrentSession
   } = useChat();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,25 +54,28 @@ function MainApp() {
   const hasStartedChat = currentMessages.length > 0;
 
   return (
-    <div className="h-screen w-screen flex bg-white dark:bg-[#0D0D0D] overflow-hidden fixed inset-0">
+    <div className="h-screen w-screen flex bg-[#F4F4F4] dark:bg-[#0D0D0D] overflow-hidden fixed inset-0">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         {!hasStartedChat ? (
           // Homepage layout - centered
-          <div className="flex-1 flex flex-col items-center justify-center px-4">
-            <div className="max-w-2xl w-full text-center mb-8">
-              <h1 className="text-4xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <div className="flex-1 flex flex-col items-center justify-center px-8">
+            <div className="max-w-[800px] w-full">
+              <h1 className="text-[48px] leading-[56px] font-normal text-[#1a1a1a] dark:text-gray-100 mb-2">
                 {currentUser ? (
-                  <>Hi there, <span className="text-purple-600 dark:text-purple-400">{getUserName()}</span></>
+                  <>Hi there, <span className="text-[#9333EA]">{getUserName()}</span></>
                 ) : (
                   'Hi there'
                 )}
               </h1>
-              <h2 className="text-3xl font-medium text-gray-700 dark:text-gray-300 mb-8">
-                What would <span className="text-blue-600 dark:text-blue-400">you like to know?</span>
+              <h2 className="text-[48px] leading-[56px] font-normal text-[#1a1a1a] dark:text-gray-100 mb-1">
+                What would <span className="text-[#3B82F6]">like to know?</span>
               </h2>
+              <p className="text-[#666666] dark:text-gray-400 text-base font-normal mt-3 mb-12">
+                Use one of the most common prompts<br />below or use your own to begin
+              </p>
             </div>
-            
+
             <Search
               addMessage={addMessage}
               updateMessage={updateResponse}
@@ -84,10 +87,10 @@ function MainApp() {
         ) : (
           // Chat layout - messages at top, input at bottom
           <>
-            <div className="flex-1 min-h-0 overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-hidden bg-[#F4F4F4] dark:bg-[#0D0D0D]">
               <Chats messages={currentMessages} isLoading={isLoading} />
             </div>
-            <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0D0D0D]">
+            <div className="flex-shrink-0 border-t border-[#E5E5E5] dark:border-gray-800 bg-white dark:bg-[#1A1A1A]">
               <div className="max-w-3xl mx-auto">
                 <Search
                   addMessage={addMessage}
@@ -108,7 +111,7 @@ function MainApp() {
 // Layout wrapper for pages that need sidebar
 function LayoutWithSidebar({ children }) {
   return (
-    <div className="h-screen w-screen flex bg-white dark:bg-[#0D0D0D] overflow-hidden fixed inset-0">
+    <div className="h-screen w-screen flex bg-[#F4F4F4] dark:bg-[#0D0D0D] overflow-hidden fixed inset-0">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         {children}
