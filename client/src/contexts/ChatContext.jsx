@@ -86,9 +86,10 @@ export function ChatProvider({ children }) {
   };
 
   // Switch to an existing chat session
-  const switchToChat = (sessionId) => {
+  const switchToChat = async (sessionId) => {
     setCurrentSessionId(sessionId);
-    // Messages will be loaded by the useEffect
+    // Wait for messages to be loaded
+    await loadSessionMessages(sessionId);
   };
 
   // Save query to Supabase and return message ID

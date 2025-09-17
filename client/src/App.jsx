@@ -2,6 +2,7 @@ import "./App.css";
 import Search from "./components/Search";
 import Chats from "./components/Chats";
 import ChatHistory from "./components/ChatHistory";
+import ChatLoading from "./components/ChatLoading";
 import Sidebar from "./components/Sidebar";
 import Profile from "./components/Profile";
 import Settings from "./components/Settings";
@@ -30,6 +31,7 @@ function MainApp() {
   } = useChat();
   const [isLoading, setIsLoading] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [isLoadingChat, setIsLoadingChat] = useState(false);
 
   // Get user's display name
   const getUserName = () => {
@@ -66,18 +68,39 @@ function MainApp() {
     setShowHistory(false);
   };
 
-  const handleSelectChat = (session) => {
-    switchToChat(session.id);
+  // Handle home navigation
+  const handleGoHome = () => {
     setShowHistory(false);
+    setIsLoadingChat(false);
+    createNewChat(); // This will clear current messages and show homepage
+  };
+
+  const handleSelectChat = async (session) => {
+    setIsLoadingChat(true);
+    setShowHistory(false);
+
+    try {
+      await switchToChat(session.id);
+      // Small delay to ensure messages are loaded
+      setTimeout(() => {
+        setIsLoadingChat(false);
+      }, 300);
+    } catch (error) {
+      console.error('Error loading chat:', error);
+      setIsLoadingChat(false);
+    }
   };
 
   const hasStartedChat = currentMessages.length > 0;
 
   return (
     <div className="h-screen w-screen flex bg-[#F4F4F4] dark:bg-[#0D0D0D] overflow-hidden fixed inset-0">
-      <Sidebar onShowHistory={handleShowHistory} />
+      <Sidebar onShowHistory={handleShowHistory} onGoHome={handleGoHome} />
       <div className="flex-1 flex flex-col">
-        {showHistory ? (
+        {isLoadingChat ? (
+          // Loading chat from history
+          <ChatLoading />
+        ) : showHistory ? (
           // History view
           <ChatHistory
             onBackToChat={handleBackToChat}
@@ -114,7 +137,7 @@ function MainApp() {
           // Chat layout - messages at top, input at bottom
           <>
             <div className="flex-1 min-h-0 overflow-hidden bg-[#F4F4F4] dark:bg-[#0D0D0D]">
-              <Chats messages={currentMessages} isLoading={isLoading} />
+              <Chats messages={currentMessages} isLoading={isLoading} isHistoricalLoad={false} />
             </div>
             <div className="flex-shrink-0 border-t border-[#E5E5E5] dark:border-gray-800 bg-white dark:bg-[#1A1A1A]">
               <div className="max-w-3xl mx-auto">

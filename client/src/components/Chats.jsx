@@ -10,8 +10,40 @@ import { Loader2 } from "lucide-react";
 export default function Chats({ messages, isLoading }) {
   const [copiedToClipboard, setCopiedToClipboard] = useState(null);
   const targetTextRef = useRef(null);
+  const scrollContainerRef = useRef(null);
   const [loadingImages, setLoadingImages] = useState(true);
-  const { pendingRequests } = useChat();
+  const { pendingRequests, currentSessionId } = useChat();
+  const [newlyReceivedMessages, setNewlyReceivedMessages] = useState(new Set());
+  const [lastSessionId, setLastSessionId] = useState(currentSessionId);
+
+  // Track when new AI responses arrive
+  useEffect(() => {
+    const aiMessages = messages.filter(msg => msg.type === 'ai' && msg.content?.data?.refined_results);
+    const newAiMessages = aiMessages.filter(msg => !newlyReceivedMessages.has(msg.id));
+
+    if (newAiMessages.length > 0) {
+      setNewlyReceivedMessages(prev => {
+        const newSet = new Set(prev);
+        newAiMessages.forEach(msg => newSet.add(msg.id));
+        return newSet;
+      });
+    }
+  }, [messages]);
+
+  // Clear animation state when session changes
+  useEffect(() => {
+    if (currentSessionId !== lastSessionId) {
+      setNewlyReceivedMessages(new Set());
+      setLastSessionId(currentSessionId);
+    }
+  }, [currentSessionId, lastSessionId]);
+
+  // Auto-scroll to bottom when new messages are added
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
+  }, [messages, pendingRequests.size]);
 
   const copyToClipboard = (text) => {
     if (text) {
@@ -43,7 +75,7 @@ export default function Chats({ messages, isLoading }) {
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      <div className="flex-1 overflow-y-auto">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto w-full px-4 py-8">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center min-h-[60vh]">
@@ -81,6 +113,7 @@ export default function Chats({ messages, isLoading }) {
                           text={msg.content.data.refined_results}
                           speed={1}
                           className="text-gray-900 dark:text-gray-100"
+                          animate={newlyReceivedMessages.has(msg.id)}
                         />
                       ) : typeof msg.content === 'string' ? (
                         <p className="text-gray-900 dark:text-gray-100">{msg.content}</p>

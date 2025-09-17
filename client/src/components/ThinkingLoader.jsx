@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Loader2, Brain, Search, Sparkles, Zap } from 'lucide-react';
 
 export default function ThinkingLoader() {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [startTime] = useState(Date.now());
 
   const messages = [
-    { text: "Thinking...", icon: Brain, duration: 0 },
-    { text: "Searching the web...", icon: Search, duration: 3000 },
-    { text: "Analyzing results...", icon: Sparkles, duration: 8000 },
-    { text: "Synthesizing response...", icon: Zap, duration: 15000 },
-    { text: "Almost there...", icon: Loader2, duration: 25000 },
-    { text: "Just a moment more...", icon: Loader2, duration: 35000 }
+    { text: "Thinking...", duration: 0 },
+    { text: "Searching the web...", duration: 3000 },
+    { text: "Analyzing results...", duration: 8000 },
+    { text: "Synthesizing response...", duration: 15000 },
+    { text: "Almost there...", duration: 25000 },
+    { text: "Just a moment more...", duration: 35000 }
   ];
 
   useEffect(() => {
@@ -31,7 +30,6 @@ export default function ThinkingLoader() {
   }, [startTime]);
 
   const currentMessage = messages[currentMessageIndex];
-  const IconComponent = currentMessage.icon;
 
   return (
     <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400 py-3">
@@ -39,7 +37,6 @@ export default function ThinkingLoader() {
         <img src="image.webp" className="w-6 h-6 rounded-full" />
       </div>
       <div className="flex items-center gap-2">
-        <IconComponent className="w-4 h-4 animate-spin" />
         <span className="text-sm font-medium">{currentMessage.text}</span>
       </div>
     </div>

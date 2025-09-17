@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { UserCircle, Mail, FileText, Sparkles, RefreshCw, Paperclip, ImageIcon, Send, Globe } from "lucide-react";
+import { UserCircle, Mail, FileText, Sparkles, RefreshCw, Send } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
 export default function Search({ addMessage, updateMessage, uuid_session_id, setIsLoading, isHomepage = false }) {
@@ -179,7 +179,11 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
           <input
             type="text"
             value={promptText}
-            onChange={(e) => setPromptText(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value.length <= 1000) {
+                setPromptText(e.target.value);
+              }
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -189,33 +193,29 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
               }
             }}
             placeholder="Ask whatever you want...."
-            className="w-full h-[56px] px-5 pr-32 text-base bg-white dark:bg-gray-800 border border-[#E5E5E5] dark:border-gray-700 rounded-xl focus:outline-none focus:border-[#D4D4D4] dark:focus:border-gray-600 placeholder:text-[#999999] dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
+            className="w-full h-[56px] px-5 pr-16 text-base bg-white dark:bg-gray-800 border border-[#E5E5E5] dark:border-gray-700 rounded-xl focus:outline-none focus:border-[#D4D4D4] dark:focus:border-gray-600 placeholder:text-[#999999] dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
           />
-          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+          <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
             <button
-              className="p-2.5 text-[#999999] dark:text-gray-500 hover:text-[#666666] dark:hover:text-gray-400 rounded-lg hover:bg-[#F4F4F4] dark:hover:bg-gray-700"
-              title="Add Attachment"
+              type="button"
+              onClick={handleGenerate}
+              disabled={!promptText.trim()}
+              className="p-2 bg-[#7C3AED] text-white rounded-lg hover:bg-[#6D28D9] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Paperclip className="w-5 h-5" />
+              <Send className="w-5 h-5" />
             </button>
-            <button
-              className="p-2.5 text-[#999999] dark:text-gray-500 hover:text-[#666666] dark:hover:text-gray-400 rounded-lg hover:bg-[#F4F4F4] dark:hover:bg-gray-700"
-              title="Use Image"
-            >
-              <ImageIcon className="w-5 h-5" />
-            </button>
-            <div className="ml-1 mr-1 flex items-center gap-2">
-              <button className="h-10 px-4 text-sm font-medium text-[#666666] dark:text-gray-400 bg-[#F4F4F4] dark:bg-gray-700 rounded-lg hover:bg-[#E5E5E5] dark:hover:bg-gray-600 flex items-center gap-2">
-                <Globe className="w-4 h-4" />
-                All Web
-              </button>
-            </div>
           </div>
         </div>
 
         {/* Character Counter */}
         <div className="mt-3 text-right">
-          <span className="text-sm text-[#999999] dark:text-gray-500">0/1000</span>
+          <span className={`text-sm ${
+            promptText.length > 1000
+              ? 'text-red-500'
+              : 'text-[#999999] dark:text-gray-500'
+          }`}>
+            {promptText.length}/1000
+          </span>
         </div>
 
         <textarea name="promptText" ref={promptTextRef} hidden />
@@ -230,7 +230,11 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
         <input
           type="text"
           value={promptText}
-          onChange={(e) => setPromptText(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value.length <= 1000) {
+              setPromptText(e.target.value);
+            }
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -240,28 +244,14 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
             }
           }}
           placeholder="Ask me anything..."
-          className="w-full h-[48px] px-4 pr-32 text-sm bg-white dark:bg-gray-800 border border-[#E5E5E5] dark:border-gray-700 rounded-xl focus:outline-none focus:border-[#D4D4D4] dark:focus:border-gray-600 placeholder:text-[#999999] dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
+          className="w-full h-[48px] px-4 pr-12 text-sm bg-white dark:bg-gray-800 border border-[#E5E5E5] dark:border-gray-700 rounded-xl focus:outline-none focus:border-[#D4D4D4] dark:focus:border-gray-600 placeholder:text-[#999999] dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
         />
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
-          <button
-            className="p-2 text-[#999999] dark:text-gray-500 hover:text-[#666666] dark:hover:text-gray-400 rounded-lg hover:bg-[#F4F4F4] dark:hover:bg-gray-700"
-            title="Attach"
-            aria-label="Attach"
-          >
-            <Paperclip className="w-4 h-4" />
-          </button>
-          <button
-            className="p-2 text-[#999999] dark:text-gray-500 hover:text-[#666666] dark:hover:text-gray-400 rounded-lg hover:bg-[#F4F4F4] dark:hover:bg-gray-700"
-            title="Use Image"
-            aria-label="Use Image"
-          >
-            <ImageIcon className="w-4 h-4" />
-          </button>
+        <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
           <button
             type="button"
             onClick={handleGenerate}
             disabled={!promptText.trim()}
-            className="p-2 ml-1 bg-[#7C3AED] text-white rounded-lg hover:bg-[#6D28D9] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 bg-[#7C3AED] text-white rounded-lg hover:bg-[#6D28D9] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Send className="w-4 h-4" />
           </button>
