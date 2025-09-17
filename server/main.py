@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from routers import chat,search
+from routers import chat,search,prompts
 from typing import Dict
 import os
 from config.llm import llm,client
@@ -20,6 +20,7 @@ app.add_middleware(
 
 app.include_router(chat.router)
 app.include_router(search.router)
+app.include_router(prompts.router)
 
 
 @app.get("/", response_model=Dict[str, str])

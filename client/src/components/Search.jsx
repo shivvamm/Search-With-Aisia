@@ -1,15 +1,20 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { UserCircle, Mail, FileText, Sparkles, RefreshCw, Send } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Search({ addMessage, updateMessage, uuid_session_id, setIsLoading, isHomepage = false }) {
   const [promptText, setPromptText] = useState("");
   const [activeButtons, setActiveButtons] = useState([]);
+  const [promptSuggestions, setPromptSuggestions] = useState([]);
+  const [isLoadingPrompts, setIsLoadingPrompts] = useState(false);
+  const [isPersonalized, setIsPersonalized] = useState(false);
   const promptTextInputRef = useRef(null);
   const promptTextRef = useRef(null);
+  const { currentUser } = useAuth();
 
-  // Prompt suggestions
-  const promptSuggestions = [
+  // Default prompt suggestions
+  const defaultPrompts = [
     {
       title: "Write a to-do list for a personal project or task",
       icon: UserCircle,
@@ -31,6 +36,92 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
       category: "Technical"
     }
   ];
+
+  // Icon mapping for categories
+  const categoryIcons = {
+    Personal: UserCircle,
+    Professional: Mail,
+    Summary: FileText,
+    Technical: Sparkles,
+    Creative: Sparkles,
+    Learning: FileText,
+    Health: UserCircle,
+    Finance: Mail,
+    Travel: UserCircle,
+    Entertainment: Sparkles
+  };
+
+  // Fetch prompts for the current user
+  const fetchPrompts = async () => {
+    if (!currentUser) {
+      setPromptSuggestions(defaultPrompts);
+      return;
+    }
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_LOCAL_BACKEND_URL;
+      const response = await fetch(`${apiUrl}/prompts/${currentUser.id}`);
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Add icons to the prompts
+        const promptsWithIcons = data.prompts.map(prompt => ({
+          ...prompt,
+          icon: categoryIcons[prompt.category] || Sparkles
+        }));
+
+        setPromptSuggestions(promptsWithIcons);
+        setIsPersonalized(data.is_personalized);
+      } else {
+        setPromptSuggestions(defaultPrompts);
+      }
+    } catch (error) {
+      console.error('Error fetching prompts:', error);
+      setPromptSuggestions(defaultPrompts);
+    }
+  };
+
+  // Refresh prompts
+  const handleRefreshPrompts = async () => {
+    if (!currentUser) {
+      setPromptSuggestions(defaultPrompts);
+      return;
+    }
+
+    setIsLoadingPrompts(true);
+
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_LOCAL_BACKEND_URL;
+      const response = await fetch(`${apiUrl}/prompts/refresh/${currentUser.id}`, {
+        method: 'POST'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Add icons to the prompts
+        const promptsWithIcons = data.prompts.map(prompt => ({
+          ...prompt,
+          icon: categoryIcons[prompt.category] || Sparkles
+        }));
+
+        setPromptSuggestions(promptsWithIcons);
+        setIsPersonalized(data.is_personalized);
+      } else {
+        console.error('Failed to refresh prompts');
+      }
+    } catch (error) {
+      console.error('Error refreshing prompts:', error);
+    } finally {
+      setIsLoadingPrompts(false);
+    }
+  };
+
+  // Load prompts when component mounts or user changes
+  useEffect(() => {
+    fetchPrompts();
+  }, [currentUser]);
 
   const handleSuggestionClick = (suggestion) => {
     setPromptText(suggestion.title);
@@ -167,11 +258,20 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
 
 
         {/* Refresh Prompts Button */}
-        <div className="flex justify-center mb-12">
-          <button className="flex items-center gap-2 text-sm text-[#666666] dark:text-gray-400 hover:text-[#1A1A1A] dark:hover:text-gray-100">
-            <RefreshCw className="w-4 h-4" />
-            Refresh Prompts
+        <div className="flex flex-col items-center mb-12">
+          <button
+            onClick={handleRefreshPrompts}
+            disabled={isLoadingPrompts}
+            className="flex items-center gap-2 text-sm text-[#666666] dark:text-gray-400 hover:text-[#1A1A1A] dark:hover:text-gray-100 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoadingPrompts ? 'animate-spin' : ''}`} />
+            {isLoadingPrompts ? 'Refreshing...' : 'Refresh Prompts'}
           </button>
+          {isPersonalized && (
+            <span className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+              ✨ Personalized for you
+            </span>
+          )}
         </div>
 
         {/* Search Input */}
