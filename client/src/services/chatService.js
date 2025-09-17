@@ -94,14 +94,14 @@ export const chatService = {
   async getUserSessions() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         throw new Error('User not authenticated');
       }
 
       const { data, error } = await supabase
         .from('chat_messages')
-        .select('session_id, query, created_at')
+        .select('session_id, query, created_at, updated_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -109,20 +109,31 @@ export const chatService = {
         throw error;
       }
 
-      // Group by session_id and get the first query as title
+      // Group by session_id and get the first query as title, latest update as lastUpdated
       const sessionsMap = new Map();
       data.forEach(message => {
         if (!sessionsMap.has(message.session_id)) {
           sessionsMap.set(message.session_id, {
             id: message.session_id,
             title: message.query.length > 50 ? message.query.substring(0, 50) + '...' : message.query,
-            lastUpdated: message.created_at,
+            lastUpdated: message.updated_at || message.created_at,
             createdAt: message.created_at
           });
+        } else {
+          // Update lastUpdated if this message is newer
+          const existing = sessionsMap.get(message.session_id);
+          const messageDate = new Date(message.updated_at || message.created_at);
+          const existingDate = new Date(existing.lastUpdated);
+          if (messageDate > existingDate) {
+            existing.lastUpdated = message.updated_at || message.created_at;
+          }
         }
       });
 
-      return Array.from(sessionsMap.values());
+      // Sort by lastUpdated descending
+      return Array.from(sessionsMap.values()).sort((a, b) =>
+        new Date(b.lastUpdated) - new Date(a.lastUpdated)
+      );
     } catch (error) {
       console.error('Error getting user sessions:', error);
       throw error;

@@ -1,6 +1,7 @@
 import "./App.css";
 import Search from "./components/Search";
 import Chats from "./components/Chats";
+import ChatHistory from "./components/ChatHistory";
 import Sidebar from "./components/Sidebar";
 import Profile from "./components/Profile";
 import Settings from "./components/Settings";
@@ -21,9 +22,14 @@ function MainApp() {
     saveQuery,
     updateResponse,
     createNewChat,
-    getCurrentSession
+    getCurrentSession,
+    chatSessions,
+    switchToChat,
+    deleteChat,
+    loadUserSessions
   } = useChat();
   const [isLoading, setIsLoading] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Get user's display name
   const getUserName = () => {
@@ -51,13 +57,33 @@ function MainApp() {
     }
   };
 
+  // Handle history navigation
+  const handleShowHistory = () => {
+    setShowHistory(true);
+  };
+
+  const handleBackToChat = () => {
+    setShowHistory(false);
+  };
+
+  const handleSelectChat = (session) => {
+    switchToChat(session.id);
+    setShowHistory(false);
+  };
+
   const hasStartedChat = currentMessages.length > 0;
 
   return (
     <div className="h-screen w-screen flex bg-[#F4F4F4] dark:bg-[#0D0D0D] overflow-hidden fixed inset-0">
-      <Sidebar />
+      <Sidebar onShowHistory={handleShowHistory} />
       <div className="flex-1 flex flex-col">
-        {!hasStartedChat ? (
+        {showHistory ? (
+          // History view
+          <ChatHistory
+            onBackToChat={handleBackToChat}
+            onSelectChat={handleSelectChat}
+          />
+        ) : !hasStartedChat ? (
           // Homepage layout - centered
           <div className="flex-1 flex flex-col items-center justify-center px-8">
             <div className="max-w-[800px] w-full">

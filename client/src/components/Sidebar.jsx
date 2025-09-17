@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 
-export default function Sidebar() {
+export default function Sidebar({ onShowHistory }) {
   const { currentUser, logout } = useAuth();
   const { createNewChat } = useChat();
   const navigate = useNavigate();
@@ -73,7 +73,7 @@ export default function Sidebar() {
         </button>
         
         <button
-          onClick={() => navigate('/history')}
+          onClick={onShowHistory}
           className="w-9 h-9 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center"
         >
           <Clock className="w-4 h-4 text-[#666666] dark:text-gray-400" />

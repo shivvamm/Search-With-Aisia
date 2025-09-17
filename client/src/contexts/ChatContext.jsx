@@ -128,6 +128,8 @@ export function ChatProvider({ children }) {
       });
       // Reload messages to show the updated response
       loadSessionMessages(currentSessionId);
+      // Refresh sessions list to update last activity
+      loadUserSessions();
     } catch (error) {
       console.error('Error updating response:', error);
       // Remove from pending even on error

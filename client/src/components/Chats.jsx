@@ -79,7 +79,7 @@ export default function Chats({ messages, isLoading }) {
                       {msg.content?.data?.refined_results ? (
                         <TypingEffect
                           text={msg.content.data.refined_results}
-                          speed={4}
+                          speed={1}
                           className="text-gray-900 dark:text-gray-100"
                         />
                       ) : typeof msg.content === 'string' ? (
