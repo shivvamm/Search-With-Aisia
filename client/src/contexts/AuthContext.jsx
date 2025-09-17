@@ -52,11 +52,24 @@ export function AuthProvider({ children }) {
     return data;
   }
 
+  async function updatePassword(newPassword) {
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+    if (error) throw error;
+    return data;
+  }
+
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUser(session?.user ?? null);
       setLoading(false);
+
+      // Clean up URL hash after successful OAuth login
+      if (session && window.location.hash) {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
     });
 
     // Listen for auth changes
@@ -64,6 +77,11 @@ export function AuthProvider({ children }) {
       (event, session) => {
         setCurrentUser(session?.user ?? null);
         setLoading(false);
+
+        // Clean up URL hash after successful OAuth login
+        if (session && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && window.location.hash) {
+          window.history.replaceState(null, '', window.location.pathname);
+        }
       }
     );
 
@@ -76,7 +94,8 @@ export function AuthProvider({ children }) {
     login,
     logout,
     loginWithGoogle,
-    updateUserProfile
+    updateUserProfile,
+    updatePassword
   };
 
   return (
