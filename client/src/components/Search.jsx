@@ -59,7 +59,7 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
     }
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_LOCAL_BACKEND_URL;
+      const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_LOCAL_BACKEND_URL || 'https://search-with-alisia-1.onrender.com';
       const response = await fetch(`${apiUrl}/prompts/${currentUser.id}`);
 
       if (response.ok) {
@@ -92,7 +92,7 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
     setIsLoadingPrompts(true);
 
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_LOCAL_BACKEND_URL;
+      const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_LOCAL_BACKEND_URL || 'https://search-with-alisia-1.onrender.com';
       const response = await fetch(`${apiUrl}/prompts/refresh/${currentUser.id}`, {
         method: 'POST'
       });
@@ -165,7 +165,7 @@ export default function Search({ addMessage, updateMessage, uuid_session_id, set
         throw new Error("Failed to save query");
       }
       
-      const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_LOCAL_BACKEND_URL;
+      const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_LOCAL_BACKEND_URL || 'https://search-with-alisia-1.onrender.com';
       console.log("Using API URL:", apiUrl);
       console.log("Session ID:", uuid_session_id);
       console.log("Message ID:", messageId);
