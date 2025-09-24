@@ -5,12 +5,14 @@ export const chatService = {
   async saveQuery(sessionId, query) {
     try {
       console.log('Attempting to save query:', { sessionId, query });
-      
+
       const { data: { user } } = await supabase.auth.getUser();
       console.log('Current user:', user);
-      
+
       if (!user) {
-        throw new Error('User not authenticated');
+        // Return a mock message ID for unauthenticated users
+        console.log('User not authenticated - skipping database save');
+        return { id: `temp_${Date.now()}`, session_id: sessionId, query, response: null };
       }
 
       const { data, error } = await supabase
@@ -42,9 +44,15 @@ export const chatService = {
   // Update the response for a specific query
   async updateResponse(messageId, response) {
     try {
+      // Skip database update for temporary message IDs (unauthenticated users)
+      if (messageId.startsWith('temp_')) {
+        console.log('Skipping database update for temporary message ID');
+        return { id: messageId, response };
+      }
+
       const { data, error } = await supabase
         .from('chat_messages')
-        .update({ 
+        .update({
           response: response,
           updated_at: new Date().toISOString()
         })

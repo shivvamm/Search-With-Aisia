@@ -73,26 +73,31 @@ export default function Sidebar({ onShowHistory, onGoHome }) {
         >
           <Home className="w-4 h-4 text-[#666666] dark:text-gray-400" />
         </button>
-        
-        <button
-          onClick={onShowHistory}
-          className="w-9 h-9 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center"
-        >
-          <Clock className="w-4 h-4 text-[#666666] dark:text-gray-400" />
-        </button>
-      </nav>
 
-      {/* Settings */}
-      <div className="pb-4">
-        <div className="flex items-center justify-center">
+        {/* Only show history for authenticated users */}
+        {currentUser && (
           <button
-            onClick={() => navigate('/settings')}
+            onClick={onShowHistory}
             className="w-9 h-9 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center"
           >
-            <Settings className="w-4 h-4 text-[#666666] dark:text-gray-400" />
+            <Clock className="w-4 h-4 text-[#666666] dark:text-gray-400" />
           </button>
+        )}
+      </nav>
+
+      {/* Settings - Only for authenticated users */}
+      {currentUser && (
+        <div className="pb-4">
+          <div className="flex items-center justify-center">
+            <button
+              onClick={() => navigate('/settings')}
+              className="w-9 h-9 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center justify-center"
+            >
+              <Settings className="w-4 h-4 text-[#666666] dark:text-gray-400" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* User Profile */}
       <div className="border-t border-[#E5E5E5] dark:border-gray-800 py-4">

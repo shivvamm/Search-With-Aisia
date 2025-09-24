@@ -100,17 +100,30 @@ export function ChatProvider({ children }) {
       const message = await chatService.saveQuery(currentSessionId, query);
       // Add to pending requests
       setPendingRequests(prev => new Set(prev).add(message.id));
-      // Reload messages to show the new query
-      loadSessionMessages(currentSessionId);
+
+      if (currentUser) {
+        // For authenticated users, reload messages from database
+        loadSessionMessages(currentSessionId);
+      } else {
+        // For unauthenticated users, add message directly to local state
+        const userMessage = {
+          id: message.id + '_user',
+          type: 'user',
+          content: query,
+          timestamp: new Date().toISOString()
+        };
+        setCurrentMessages(prev => [...prev, userMessage]);
+      }
+
       return message.id;
     } catch (error) {
       console.error('Error saving query:', error);
-      
+
       // Check if it's a table doesn't exist error
       if (error.message?.includes('relation "chat_messages" does not exist')) {
         alert('Database table not created yet. Please create the chat_messages table in Supabase first.');
       }
-      
+
       return null;
     }
   };
@@ -127,10 +140,21 @@ export function ChatProvider({ children }) {
         newSet.delete(messageId);
         return newSet;
       });
-      // Reload messages to show the updated response
-      loadSessionMessages(currentSessionId);
-      // Refresh sessions list to update last activity
-      loadUserSessions();
+
+      if (currentUser) {
+        // For authenticated users, reload messages from database and update sessions
+        loadSessionMessages(currentSessionId);
+        loadUserSessions();
+      } else {
+        // For unauthenticated users, add response directly to local state
+        const aiMessage = {
+          id: messageId + '_ai',
+          type: 'ai',
+          content: response,
+          timestamp: new Date().toISOString()
+        };
+        setCurrentMessages(prev => [...prev, aiMessage]);
+      }
     } catch (error) {
       console.error('Error updating response:', error);
       // Remove from pending even on error
