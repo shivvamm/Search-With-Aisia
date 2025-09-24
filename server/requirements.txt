@@ -11,3 +11,4 @@ beautifulsoup4
 redis
 google-generativeai
 langchain-google-genai
+supabase
